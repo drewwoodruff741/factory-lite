@@ -1,0 +1,18 @@
+{
+  "description": "FACTORY-lite: run the project's ./prove.sh before Claude stops; block the turn if it fails.",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash",
+            "args": ["${CLAUDE_PLUGIN_ROOT}/hooks/stop-gate.sh"],
+            "timeout": 600,
+            "statusMessage": "Running ./prove.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

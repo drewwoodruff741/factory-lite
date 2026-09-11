@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./prove.sh)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ]
+  },
+  "extraKnownMarketplaces": {
+    "factory": {
+      "source": { "source": "github", "repo": "drewwoodruff741/factory" }
+    }
+  },
+  "enabledPlugins": {
+    "factory-lite@factory": true
+  }
+}
