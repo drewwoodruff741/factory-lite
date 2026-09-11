@@ -11,7 +11,7 @@
   },
   "extraKnownMarketplaces": {
     "factory": {
-      "source": { "source": "github", "repo": "drewwoodruff741/factory" }
+      "source": { "source": "github", "repo": "drewwoodruff741/factory-lite" }
     }
   },
   "enabledPlugins": {
