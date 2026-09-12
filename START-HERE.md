@@ -113,7 +113,7 @@ directory.
 
 ---
 
-## [ ] Step 2: Capture LESSONS.md and freeze v2 (≈ 30 min)
+## [x] Step 2: Capture LESSONS.md and freeze v2 (≈ 30 min)
 
 **Goal:** carry the *evidence* out of v2 and nothing else.
 
@@ -184,7 +184,14 @@ whole loop on something trivial: `/factory-lite:spec` a CLI that prints hello �
 `./prove.sh` passes → `/factory-lite:harden` and confirm it flips `Phase:` and `PROFILE=`.
 
 **Done when:** you watched the gate block a premature stop and release after the check passed,
-and `/context` for the scratch project is a fraction of v2's.
+and `/context` for the scratch project is recorded next to v2's in LESSONS.md.
+
+> **Corrected after Step 2.** The original Done-when — "`/context` is a fraction of v2's" — cannot
+> be satisfied. v2's startup was **42.8k**, of which **32.3k is the empty-folder floor**; its whole
+> harness cost only **~10.5k**. Nothing can be a fraction of that. Judge v3 on *what it adds above
+> 32.3k* (target: under 10.5k, i.e. cheaper than v2 *and* doing less), and remember Step 2's
+> headline: v2's damage was behavioural, not contextual. A small number here is necessary, not
+> sufficient.
 
 **Guardrails:** anything that misbehaves is fixed in `~/dev/factory-lite`, re-smoke-tested,
 re-tagged. Never patched in the scratch project. Delete the scratch project after.
@@ -209,8 +216,9 @@ continuing the open one, or `/hooks` will show nothing.
 install `superpowers` at **project scope** from Customize → Plugins in the extension; how to
 read `/plugin` for what it costs and `/context` for the new startup total; the decision rule
 (**revised in Step 1:** the original "15% of the window" is meaningless on a 1M-token window —
-150k. Measure against the empty-folder baseline in LESSONS.md, 32.3k, and stay project-scoped if
-the two plugins together add more than roughly 30k on top of it); one trial of `/brainstorm`
+150k. Measure against the empty-folder baseline in LESSONS.md, 32.3k. **Revised again in Step 2:**
+the 30k budget originally written here is three times what *all of v2* cost (10.5k). Treat 10.5k as
+the number to beat and anything approaching 30k as a failure worth reporting, not a pass); one trial of `/brainstorm`
 feeding into `/factory-lite:spec`; and a check that
 FACTORY has no skill whose name resembles a Superpowers skill and the test project has no
 `.claude/agents/reviewer.md` of its own.
@@ -304,7 +312,8 @@ components as it did after step 3, or fewer.
 
 ## Finished means
 
-- `/context` on a new project is a fraction of the v2 number in LESSONS.md.
+- `/context` on a new project adds less above the 32.3k floor than v2's ~10.5k did — while doing
+  less than v2 did, not more (see LESSONS.md; the number alone never proved anything).
 - One real project reached a proven, runnable skeleton inside the timebox.
 - Every FACTORY component has an assumption / evidence / delete-when header.
 - You have not opened the Claude Code terminal UI once.
