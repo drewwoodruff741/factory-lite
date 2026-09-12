@@ -66,3 +66,13 @@ depend on.
 - **Step 1:** the step-1 sub-guide initially asked for `npm`, which is not in the stack. Ubuntu
   26.04 ships `nodejs` without it, and `pnpm` is per-project via corepack. It taught: the drift the
   Context block blocks also arrives inside the sub-guides, not only from the sessions that use them.
+- **Step 3:** `claude plugin validate .` on this repo validates **only the marketplace manifest**,
+  because the root holds both manifests and the marketplace wins. The plugin manifest and the
+  components need their own calls: `claude plugin validate .claude-plugin/plugin.json --strict`,
+  `... validate skills --strict`, `... validate agents --strict`. It taught: one green "Validation
+  passed" is not proof that everything in a dual-role repo was checked — read *which* file it
+  names on the first line.
+- **Step 3:** `claude plugin details <name>` works only on an **installed** plugin. Its own error
+  message suggests `--plugin-dir <path>`, but that option does not exist on the `details`
+  subcommand (`error: unknown option '--plugin-dir'`). So there is no pre-install token-cost
+  read; the first real number is Step 4's `/context`.

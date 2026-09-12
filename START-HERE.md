@@ -143,7 +143,7 @@ If something feels project-specific, it goes in that project later, not in FACTO
 
 ---
 
-## [ ] Step 3: New repo with the scaffold in it (≈ 1 hour)
+## [x] Step 3: New repo with the scaffold in it (≈ 1 hour)
 
 **Goal:** `factory-lite` exists on GitHub, passes its own tests, and is tagged `v3.0.0`.
 
