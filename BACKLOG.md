@@ -329,6 +329,19 @@ settings that change what the harness can be trusted to prove.
   project gitignore its data file on day one, which means **Step 7 will most likely produce no
   evidence for this item either way** — the right trade, since the alternative is letting a real
   project run noisily to prove a point.
+- **Step 8 evidence line (2026-09-12), status deliberately unchanged — and it widens the surface
+  rather than supporting the wish.** The prediction named *the project's own data file* as the
+  trigger. Hardening `~/dev/coach` showed the trigger is broader than that: adding `pytest` and
+  running `ruff` wrote `.pytest_cache/` and `.ruff_cache/` into the working directory, both
+  untracked and non-ignored, and both rewritten by **every `prove.sh` run** — that is, by the gate
+  itself, so the gate would have dirtied the very hash it uses to decide whether anything changed.
+  Dev tooling, not project data, and it arrives the moment a project goes strict. **Still zero
+  noisy runs observed:** they were added to `.gitignore` in the same commit that introduced pytest,
+  before any gate run saw them. Which is the point. The fix was two lines of `.gitignore` written
+  by the project, in the project, at the moment the project created the problem — with no harness
+  involvement available, wanted, or missed. Two projects have now had this exact shape and neither
+  needed the harness to solve it, so the "or nothing at all, because this is the project's job"
+  candidate has gained the only evidence either way.
 - **Delete when:** n/a until something is chosen.
 - **Status:** waiting, on **zero** observations. Explicitly **not** to be built on the strength of
   the prediction above — that is the accretion failure mode LESSONS records for v2, where every
@@ -379,8 +392,59 @@ settings that change what the harness can be trusted to prove.
   than hypothetical: **every future check of the gate degrades into asking a person.** This is the
   strongest argument yet for the cheapest candidate on the list — a one-line `systemMessage` on
   PASS — and it should be weighed first at Step 9.
+  **Step 8 evidence line (2026-09-12), status deliberately unchanged. The step's job was to supply
+  the denominator Step 7 could not; it supplied one, and in doing so falsified the item's own
+  proposed workaround.**
+
+  The tally, kept live across the session rather than reconstructed, hardening `~/dev/coach`
+  through three backlog items:
+
+  ```
+  stops where the gate did NOT block:  7
+  stops where the gate RAN and blocked: 0
+  3-strike releases:                    0
+  ```
+
+  (Counted live at each stop, through and including the session's close-out message. Step 7's
+  comparable figure was ~1 stop, so the denominator did grow — it grew because hardening ships one
+  reviewed item at a time, which is what Step 8 predicted, not because anything was done to the
+  gate.)
+
+  **Note the first row is not the row Step 8 asked for.** It asked for "stops where the gate RAN
+  and passed", and that number cannot be produced *even by counting live*, because a pass and an
+  unchanged-tree skip are both a silent exit 0 — finding 1 above. Step 8 assumed the problem was
+  reconstruction after the fact ("a pass is silent and cannot be reconstructed afterwards"), and
+  the item's own cheapest candidate rests on the same assumption: "a tally kept by hand during the
+  three sessions is cheap enough". **It is not.** Counting live gets you "did not block", which is
+  the complement of the blocks you can already count from the transcript. The hand-tally candidate
+  should be struck at Step 9: it does not produce the quantity.
+
+  **The qualitative half, which matters more here than the ratio.** The gate blocked on nothing,
+  so it was never once annoying. It was also never once useful, and the session says precisely why:
+  during those six stops the `reviewer` agent found a P0 (`food_id=10**30` returning a 500 with a
+  traceback — the exact defect the shipped item existed to prevent), a P1 (`servings=1e308`
+  accepted, making a day's totals read `inf` permanently), three tests that could not fail under
+  any circumstances, and three whole sections of the project's SPEC.md deleted by a scripted edit,
+  `## Constraints` among them. **`./prove.sh` was green throughout all of it.**
+
+  That is not an argument that the gate is worthless, and Step 9 should resist reading it as one.
+  It is an argument about *what kind* of thing it catches: **a gate that runs `prove.sh` protects
+  against regression, not against introduction.** At the moment a defect is written, `prove.sh` by
+  definition does not yet check for it — the check that would catch it is part of the same unwritten
+  work. Every defect above was found by review and then *converted* into a check the gate now
+  enforces. So the honest framing for the delete-when is not "does it pass >95%" but "does anything
+  else run `prove.sh` if it does not".
+
+  **And that last question exposes the ratio's deepest problem, worse than the denominator
+  collapse.** The 0 blocks are not evidence the gate is redundant, because the session ran
+  `./prove.sh` manually before every single stop — following the `verify` skill, which the gate's
+  existence is partly why anyone follows. A gate that never fires *because the agent pre-empts it*
+  and a gate that never fires *because it is not wired* produce identical tallies. Step 7 could not
+  tell those apart without a human typing `/hooks` (finding 5); Step 8 could not either, for the
+  same reason, and asked. **The metric cannot separate deterrence from absence, which is the one
+  distinction retiring the gate actually turns on.**
 - **Delete when:** n/a until something is chosen.
-- **Status:** waiting, on one project's observation, and deliberately **not** decided in Step 7 —
+- **Status:** waiting, on two projects' observations, and deliberately **not** decided in Step 7 —
   the step's guardrail forbids changing the harness mid-project, and every candidate above is a
   change to gate behaviour. Note the circularity this item sits on: the gate's delete-when is the
   main reason to collect the number, so a gate that cannot report it is a gate that cannot be
