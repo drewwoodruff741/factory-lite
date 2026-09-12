@@ -476,3 +476,35 @@ settings that change what the harness can be trusted to prove.
   rule that a component enters FACTORY only with evidence from a shipped project — and this one has
   a live counter-argument from the item directly above it. Revisit if a second project loses spec
   content, or if one is found to have been running against a damaged `SPEC.md` without noticing.
+
+### 9. Superpowers and FACTORY give contradictory instructions, and nothing arbitrates
+
+- **Wish:** the stack should say which planning tool applies at which phase, rather than shipping
+  two and hoping. Candidates, **none chosen**: a line in `template/CLAUDE.md` naming the entry
+  point for the phase; `pre-alpha` explicitly overriding Superpowers' document steps; pinning
+  `brainstorming` to its Bounded path at invocation time (the current, purely operational
+  mitigation); or nothing, on the grounds that a human choosing deliberately each time is fine.
+- **Assumption it encodes:** that two installed components giving opposite instructions is resolved
+  by whichever one the model happens to read first, and that this is not a stable way to run a
+  harness whose whole claim is discipline.
+- **Evidence:** Step 7, twice over.
+  - `superpowers:brainstorming` has a **Bounded** path (5 steps, "no plan document") and an
+    **Architectural** path whose step 6 writes a design doc and step 9 hands off to
+    `writing-plans`. `skills/pre-alpha/SKILL.md:24` says **"SPEC.md is the only planning
+    artifact."** Both are loaded, and they cannot both be obeyed.
+  - **Path selection is not predictable from project state.** Two fresh factory-lite scaffolds,
+    identical conditions — no code, placeholder `SPEC.md` — were classified differently: the Step 5
+    run never declared a path, the Step 7 run declared Architectural. The latter produced 1911 lines
+    of design-plus-plan referencing itself rather than `SPEC.md`, all of it deleted.
+  - `writing-plans` then specified a **57-test TDD suite** in pre-alpha, where `README.md:115-117`
+    says the single `prove.sh` check stands in for a suite until hardening.
+  - The same plan placed the `prove.sh` check at **task 9 of 9**, which would have left the Stop
+    gate dormant for the entire build — against `pre-alpha/SKILL.md:12`, the Step 7 sub-guide §6,
+    and the step prompt. It was rejected and rewritten to put the check first.
+- **Delete when:** n/a until something is chosen.
+- **Status:** waiting. **The cost is currently paid by a human noticing**, which worked in Step 7
+  only because the conflict was being watched for. Weigh at Step 9 against the standing rule that
+  a component enters FACTORY only with shipped-project evidence — note that three of the four
+  candidates above are *prose*, not components, so the usual accretion objection is weaker here
+  than it looks. Related: item 2 (delete `spec`), whose evidence now runs the other way precisely
+  because `brainstorming` brings this document chain with it.
