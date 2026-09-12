@@ -131,8 +131,12 @@ Two personal rules for the whole build, which I want you to hold me to:
 - harness wishes → FACTORY's `BACKLOG.md`
 - neither gets built mid-project. Not one.
 
-MY IDEA (one line): <FILL THIS IN>
-LANGUAGE: <Python → uv, ruff, pytest | TypeScript → pnpm, tsc, vitest, biome>
+MY IDEA (one line): a nutrition and fitness tool — log intake (calories, macros, micros), track
+body measurements over time, later recommend workouts from equipment + goal + recovery, and
+eventually coach rather than just record. Bare bones first, not everything at once.
+LANGUAGE: Python — uv, ruff, pytest. Decided 2026-09-12: uv 0.12.9, ruff 0.16.6, python3 3.13.15 and
+stdlib sqlite3 3.53.1 are already on this machine, so the skeleton needs no install step and no
+dependencies. pnpm is absent, so TypeScript would put a corepack bootstrap in front of line one.
 
 Done when: `./prove.sh` passes on the walking skeleton, the Stop gate is armed (not dormant) and
 has been seen to block at least once, and a human can run the thing with the one command written in
@@ -146,7 +150,20 @@ by the release rule, from `~/dev/factory-lite`, never from the project. Don't de
 problem go away, refuse and tell me what the check is actually reporting; the gate did exactly that
 three times in Step 4 and that was the result worth having.
 
-Write the sub-guide for this step to `docs/subguides/step-7.md`, then wait for my go before
-executing anything.
+**The sub-guide is already written, reviewed and committed: `docs/subguides/step-7.md`.** Read it
+and execute it — do not rewrite it, and do not re-derive what §0 of it already checked. Three things
+were settled before it was written and are not open:
+- **Chore 1 is diagnosed.** One extension, `tjcg.auto-accept-claude-code` 0.5.0, writes all four
+  permission-disarm paths on every activation — which is why Step 1's hand fix came back. §1 executes
+  the teardown; pre-teardown backups of all six affected files are at
+  `~/backups/factory-lite-chore1-2026-09-12`. **§1b costs a VS Code extension-host restart, so it will
+  kill your session.** That is expected. Reopen and resume at §1c.
+- **Two observations are pre-registered** so they cannot be scored to taste after the fact: §5c is an
+  eight-row scorecard for BACKLOG item 2, and §8 is the gate-block tally. Read both *before* running
+  the thing they measure.
+- **BACKLOG items 4 and 5 stay undecided, and item 6 stays unbuilt.** Item 6 is recorded on zero
+  observations, as a prediction, precisely so it is not built on one.
+
+Start at §1. Tell me what you are about to do before the restart, then wait for my go.
 
 ---
