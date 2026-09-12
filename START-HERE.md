@@ -55,9 +55,18 @@ You are writing me a step-by-step sub-guide for ONE step of the plan, then helpi
 
 Hard constraints:
 - I use ONLY the Claude Code VS Code extension, on VS Code Remote-WSL (WSL2 Ubuntu). I never use
-  the Claude Code terminal UI. Slash commands are typed in the extension's chat box; plugin,
-  hook, memory, and permission management is under the "/" command menu → Customize. Any shell
-  command must be a plain one-off in the VS Code integrated terminal (bash), never `claude` alone.
+  the Claude Code terminal UI, and I don't want to be handed blocks of shell to paste either:
+  run them yourself with your Bash tool (that is not the terminal UI) and hand me only what
+  genuinely needs me — a sudo password, a browser login, or a VS Code UI action. Slash commands
+  are typed in the extension's chat box; plugin, hook, memory, and permission management is under
+  the "/" command menu → Customize, whose contents vary by release (there is no model entry on
+  2.1.269 — type /model instead). Never `claude` alone; `claude --version`,
+  `claude plugin validate .` and friends are fine because they print and exit.
+- Environment already verified in Step 1, do not re-check: git 2.53.0, bash 5.3.9, jq 1.8.1,
+  node v22.22.1, gh 2.46.0 (logged in as drewwoodruff741), claude 2.1.269, core.autocrlf=input,
+  core.eol=lf, .gitattributes pins LF. Empty-folder /context baseline is 32.3k of a 1M window.
+  Two extension quirks: /context prints no path line, and a folder needs at least one file in it
+  before the extension will open a session there.
 - The scaffold lives at ~/dev/factory-lite (the repo root is both the plugin and its marketplace).
   Layout: .claude-plugin/{plugin,marketplace}.json · hooks/{hooks.json,stop-gate.sh} ·
   skills/{pre-alpha,verify,spec,harden}/SKILL.md · agents/{explorer,reviewer}.md ·
@@ -79,7 +88,7 @@ Hard constraints:
 
 ---
 
-## [ ] Step 1: Environment ready (≈ 30 min)
+## [ x] Step 1: Environment ready (≈ 30 min)
 
 **Goal:** a WSL2 Ubuntu machine where every tool in the stack exists and the extension talks to it.
 
@@ -108,8 +117,12 @@ directory.
 
 **Goal:** carry the *evidence* out of v2 and nothing else.
 
-**Bring to the session:** the Context block, the empty `LESSONS.md` template, and one number:
-`/context` from a fresh session in any project still on v2.
+**Bring to the session:** the Context block and one number: `/context` from a fresh session in any
+project still on v2. Grab that number *before* archiving the repo.
+
+> **Note (after Step 1):** `LESSONS.md` is **no longer the empty template**. It already carries the
+> 32.3k empty-folder baseline and two build-time findings under `## From building v3 itself`.
+> Step 2 fills the v2 sections around them — nothing existing gets overwritten.
 
 **The session produces:** an interview that fills `LESSONS.md` from memory (what bit you, what
 it cost, what it taught; what you kept adding and never used; what was project-specific and
