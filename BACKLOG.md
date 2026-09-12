@@ -199,6 +199,24 @@ settings that change what the harness can be trusted to prove.
    longer exists, and `Bash(claude config *)`, granted for a call that turned out not to be a
    subcommand at all.
 
+4. **The template's permissions block has still never been exercised end to end.** Checked at
+   Step 9 rather than deferred again — it costs one transcript read, not a project. `~/dev/coach`'s
+   session records show **51 turns in `auto` permission mode and 6 in `plan`, and `default` never
+   once**, so the six-entry allowlist in `template/.claude/settings.json` was never the thing
+   deciding anything. Two findings, and the second is the reassuring one:
+   - **Permissions are live on this machine now** — chore 1 worked. `~/dev/coach/.claude/settings.local.json`
+     contains exactly **one** granted entry for the whole project, and a grant can only be written
+     by an approved dialog (Step 7's lesson). So the machinery records, prompts and persists.
+   - **The grant is `Bash(mkdir -p /home/drew/dev/coach/docs/superpowers/specs && echo created)`,
+     plus an `additionalDirectories` entry for the same path.** The only permission dialog the
+     entire project ever raised was the Superpowers document chain asking for somewhere to put
+     itself — which is item 9, arriving from a direction nobody was watching.
+   **Status: open, and deliberately not a component.** What is unverified is narrow: whether the
+   six allow entries are ever *consulted*, which needs one session run in `default` mode. A match
+   leaves no record, so the only way to see it is to run in `default` and notice which commands do
+   **not** prompt. Worth doing on the next project's first session; not worth a project of its own,
+   and nothing in the harness changes either way.
+
 ## Items
 
 **Step 9 pass, 2026-09-12 — all nine items have a status, and the file is closed to `waiting`.**
