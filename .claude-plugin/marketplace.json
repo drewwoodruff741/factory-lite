@@ -1,6 +1,6 @@
 {
   "name": "factory",
-  "owner": { "name": "<your name>" },
+  "owner": { "name": "Drew" },
   "metadata": {
     "description": "FACTORY plugins: the reusable Claude Code harness projects are started from.",
     "version": "3.0.0"
