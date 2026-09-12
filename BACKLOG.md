@@ -160,7 +160,7 @@ They are marked so that a future reader does not mistake "shipped" for "confirme
 | Instruction | Where | Why it cannot be tested | If it ever can be |
 |---|---|---|---|
 | Stop at `brainstorming`'s architectural step 5; SPEC.md is the only planning artifact | `skills/pre-alpha/SKILL.md` | applies at spec time; no spec time remains | a new project's first session |
-| The gate's removal experiment (remove the hook, keep the prose) | `hooks/stop-gate.sh` header, `README.md` §1 | needs a project willing to drop its safety net for a phase | one of coach's remaining hardening items, by deliberate choice |
+| ~~The gate's removal experiment (remove the hook, keep the prose)~~ **RUN 2026-09-12** | `hooks/stop-gate.sh` header, `README.md` §1 | ~~needs a project willing to drop its safety net for a phase~~ | done: coach, hardening item 4 — see item 7 |
 
 **The Stop gate is therefore kept by decision, not by evidence, and that is written down on
 purpose.** Its delete-when is runnable — on coach, on one hardening item, at the cost of a phase
@@ -697,6 +697,43 @@ evidence has told you something, and five of them had.
   tell those apart without a human typing `/hooks` (finding 5); Step 8 could not either, for the
   same reason, and asked. **The metric cannot separate deterrence from absence, which is the one
   distinction retiring the gate actually turns on.**
+  **The experiment was run, 2026-09-12, and it is the first of these five delete-whens ever to be
+  executed.** Drew reversed the close-out judgement and coach built hardening item 4 — the
+  `/measure` chart — with the hook removed and the prose kept.
+
+  Setup, because the mechanism turned out to be the first finding: **no factory-lite document says
+  how to remove the hook**, and two of the three obvious ways are invalid against this item's own
+  requirement that the prose stay. Uninstalling the plugin also removes the `verify` skill.
+  A project-scope `enabledPlugins` entry blocks `claude plugin uninstall` outright. The client's
+  `/hooks` UI cannot disable a plugin-supplied hook either — it says to edit settings directly, and
+  the settings schema has no key that does it (`disableAllHooks` would also kill the user's own
+  notifier hook). **Emptying the `Stop` array in the plugin's own `hooks/hooks.json` at the
+  project's pinned install path is the only mechanism that removes the hook alone.** Control
+  confirmed by `/reload-plugins` reporting "1 hook", down from 2. *A delete-when that names an
+  experiment has to name how to run it, or the next person re-derives all of that first.*
+
+  Result: **`./prove.sh` ran before every stop.** Two stops with the hook removed, both preceded by
+  a full strict run; a third at handoff, before the reload, so its gate state is ambiguous and it is
+  not counted. The prose alone kept the check running.
+
+  **What that is worth, which is less than it looks.** Two stops is not a sample — the same
+  denominator collapse this item already records, since one hardening item built in long turns
+  produces almost no stops. And the observer effect is not incidental here: the session set the
+  experiment up and knew it was running. So this is one clean data point for "the prose is
+  sufficient", not a demonstration of it. **The gate stays**, now on one run's worth of evidence
+  instead of none.
+
+  **The observation worth more than the tally.** The only real defect in item 4 was caught by
+  driving the app over HTTP against a month of seeded readings — a weekly rate rendering
+  "-0.0 in per week", true and useless, because every test written for it used weights where one
+  decimal place happens to be enough. Meanwhile the `reviewer` agent found two tests that could not
+  fail, one of them on the smoothing that *is* item 4: the trend polyline could be swapped for the
+  raw readings coordinate-for-coordinate and all 163 tests stayed green. **Neither is reachable by
+  a gate that runs `prove.sh`, however reliably it fires.** That is Step 8's finding with a second
+  project behind it — a `prove.sh` gate protects against regression, not against introduction — and
+  it reframes the question for good: not how often the gate passes, but whether anything else runs
+  `prove.sh`. On this run, something did.
+
 - **Delete when:** n/a until something is chosen.
 - **Status:** waiting, on two projects' observations, and deliberately **not** decided in Step 7 —
   the step's guardrail forbids changing the harness mid-project, and every candidate above is a

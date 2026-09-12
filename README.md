@@ -71,10 +71,13 @@ cheaper one that survives — a real result, and the one the evidence has been p
 The conclusion the experiment must never reach is "neither is needed": it compares two FACTORY
 components against each other, it does not test the model with nothing.
 
-**Close-out status: the gate is kept by decision, not by evidence** (`BACKLOG.md`, Close-out). The
-experiment is runnable and is deliberately not being run — a harness in maintenance should not
-degrade its one working project in order to study itself. That is a judgement, it is labelled as
-one, and it is a better resting state than a retirement condition nobody can execute. The `spec`/`harden` row is the caution worth carrying:
+**Run once, 2026-09-12, after close-out** (`BACKLOG.md` item 7). Drew reversed the
+deliberately-not-running judgement and coach built hardening item 4 with the hook removed and the
+prose kept. `./prove.sh` ran before every stop; the prose alone kept the check running. **That is
+one clean data point, not a demonstration** — two stops is not a sample, and the session knew it
+was being measured. The gate is still kept, and now on one run's worth of evidence rather than on
+none. Note the hook's own header still carries the pre-run "deliberately not being run" label; that
+is a component file, so correcting it needs a version bump rather than a prose commit. The `spec`/`harden` row is the caution worth carrying:
 its old wording ("you stop skipping them") technically fired — neither command was typed in the
 one real project — while both rituals were performed anyway, one of them by reading the skill file
 as a document. *Measure the artifact, not the invocation.* (`verify` had no row at all until Step 9

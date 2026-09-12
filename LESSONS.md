@@ -762,3 +762,23 @@ depend on.
   one. They are tabled in `BACKLOG.md` with why they cannot be tested and what would let them be.
   The same move applies to the gate itself: **kept by decision, not by evidence**, written on the
   component. An honest label is a better resting state than a retirement condition nobody can run.
+
+**Step 10: a delete-when that names an experiment has to name how to run it.** The Stop gate's
+retirement condition — "remove the hook, keep the prose" — was carefully worded and genuinely
+runnable, and it still cost an hour of investigation before it could start, because no document
+said *how* to remove one plugin-supplied hook. Two of the three obvious mechanisms turn out to
+violate the condition's own "keep the prose" clause: uninstalling the plugin removes the `verify`
+skill with it, and a project-scope `enabledPlugins` entry refuses uninstall outright. The client's
+hook UI cannot do it, and the settings schema has no per-hook disable. The answer was to empty the
+`Stop` array in the plugin's own `hooks.json` at the project's pinned install path. **General form:
+an experiment is an instruction, and an instruction that omits its mechanism is a wish.** If a
+delete-when says "remove X", it should say which file, and what must still be true afterwards.
+
+**Step 10: the first time one of these five delete-whens was actually executed, the result was
+real and almost worthless at the same time, and both halves matter.** `./prove.sh` ran before every
+stop with the hook removed — a clean result for "the prose is sufficient" — across *two stops*, in
+a session that knew it was being measured. Recording it as a result without recording the sample
+size and the observer effect would have turned one data point into a retirement. **General form:
+when a component's retirement finally becomes measurable, the temptation is to act on the first
+measurement. Write down what the measurement cannot support, in the same breath as the
+measurement.**
