@@ -92,8 +92,13 @@ whose `/context` shows the WSL project path; and turns on line-ending safety for
 scripts never get CRLF. It should also show how to set the default model and permission mode from
 the extension's Customize menu.
 
-**Done when:** every check passes and a throwaway folder's `/context` output shows a `/home/...`
-path.
+**Done when:** every check passes and a throwaway folder's session confirms a `/home/...` working
+directory.
+
+> **Corrected during Step 1 (claude 2.1.269):** `/context` prints only the token table — there is
+> no path line to read. Ask the session "what is your working directory?" in the chat box instead.
+> Also: a folder needs at least one file before the extension will open a session in it, so create
+> a throwaway file first.
 
 **Guardrails:** no global installs beyond the list. No dotfile frameworks.
 
@@ -137,6 +142,16 @@ explain in one line each what `plugin.json`, `marketplace.json`, and `source: ".
 **Guardrails:** change nothing inside `skills/`, `agents/`, or `hooks/` in this step. Fix bugs
 only if a test fails, and log the fix in BACKLOG.md.
 
+**Interface note (verified in Step 1, claude 2.1.269).** Everything in this step is either a file
+edit or a one-off command in the integrated terminal. Nothing here opens the terminal UI:
+`gh repo create`, `bash scripts/harness-smoke.sh`, and `claude plugin validate .` all print and
+exit. Add `--strict` to the validate call to fail on warnings too. Two further print-and-exit
+commands exist if you want them: `claude plugin details <name>` reports a plugin's component
+inventory and projected token cost, and `claude plugin tag` creates a `{name}--v{version}` git tag
+while checking that `plugin.json` and the marketplace entry agree — note it tags
+`factory-lite--v3.0.0`, not `v3.0.0`, so use plain `git tag` if you want the bare version tag this
+step's Done-when asks for.
+
 ---
 
 ## [ ] Step 4: Prove the harness live, inside the extension (≈ 1 hour)
@@ -161,6 +176,14 @@ and `/context` for the scratch project is a fraction of v2's.
 **Guardrails:** anything that misbehaves is fixed in `~/dev/factory-lite`, re-smoke-tested,
 re-tagged. Never patched in the scratch project. Delete the scratch project after.
 
+**Interface note (verified in Step 1).** This step is already extension-only: `/hooks`, `/context`,
+`/factory-lite:spec`, `/clear`, `/factory-lite:harden` are all typed in the chat box, and the
+symlink + `init.sh` parts are one-off terminal commands. **Do not use `claude --plugin-dir`** —
+README lists it as an alternative but it launches the terminal UI. The symlink into
+`<scratch>/.claude/skills/factory-lite/` is the method. One extension-specific gotcha: a plugin
+loads at **session start**, so after creating the symlink, start a *new* session rather than
+continuing the open one, or `/hooks` will show nothing.
+
 ---
 
 ## [ ] Step 5: Superpowers installed and scoped (≈ 30 min)
@@ -172,8 +195,10 @@ re-tagged. Never patched in the scratch project. Delete the scratch project afte
 **The session produces:** how to add the `anthropics/claude-plugins-official` marketplace and
 install `superpowers` at **project scope** from Customize → Plugins in the extension; how to
 read `/plugin` for what it costs and `/context` for the new startup total; the decision rule
-(stay project-scoped if startup context exceeds roughly 15% of the window, otherwise widen to
-user scope); one trial of `/brainstorm` feeding into `/factory-lite:spec`; and a check that
+(**revised in Step 1:** the original "15% of the window" is meaningless on a 1M-token window —
+150k. Measure against the empty-folder baseline in LESSONS.md, 32.3k, and stay project-scoped if
+the two plugins together add more than roughly 30k on top of it); one trial of `/brainstorm`
+feeding into `/factory-lite:spec`; and a check that
 FACTORY has no skill whose name resembles a Superpowers skill and the test project has no
 `.claude/agents/reviewer.md` of its own.
 

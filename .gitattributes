@@ -1,0 +1,7 @@
+# Hooks and prove.sh are bash. A CRLF line ending makes them fail with "bad interpreter",
+# which is the first thing README.md tells you to check when the Stop gate never fires.
+# Global git config only protects this machine; this file protects every clone.
+* text=auto eol=lf
+*.sh text eol=lf
+*.json text eol=lf
+*.md text eol=lf
