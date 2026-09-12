@@ -88,7 +88,8 @@ Hard constraints:
   green tree. It also refused, three times, to weaken its own check when told to make the problem
   go away — the behavioural result Step 2 said to look for. Numbers: v3 startup measured 34.7k.
   **Step 5 corrected this: the "+2.4k above the floor" was mostly system-tools noise, not v3.**
-  v3's real cost is the ~560 tok Step 4 already identified (agents 156 + memory 300 + skills ~100). The harness is now v3.0.1, tagged and pushed: the Stop gate is dormant while
+  v3's real cost is the ~560 tok Step 4 already identified (agents 156 + memory 300 + skills
+  ~100). The harness is now v3.0.1, tagged and pushed: the Stop gate is dormant while
   `prove.sh` still holds the template TODO, because gating on it blocked the very first turn of a
   fresh project, `/factory-lite:spec` included. Three interface facts worth keeping: the CLI and
   the extension keep separate trust records, so a CLI "workspace not trusted" warning says nothing
