@@ -150,6 +150,12 @@ settings that change what the harness can be trusted to prove.
   **Step 7 carries a free probe for this** as row 8 of the scorecard in `docs/subguides/step-7.md`
   §5c: whether the title and one-liner get filled, and *by which skill*. Costs nothing to observe
   and settles whether this item survives item 2.
+  **Step 7 result (2026-09-12): filled, and again by `brainstorming`, not by `spec`.** `~/dev/coach`
+  got a real title and a real one-liner; `/factory-lite:spec` was never invoked in that session at
+  all. So this is the **second** sighting for `brainstorming` and still the **first and only** for
+  `spec` — the evidence for the wish as written (a gap in *`spec`'s* instruction) has not moved
+  since Step 4. What did move is this item's survival odds: item 2 did not fire, so `spec` lives on
+  for now, and with it this item.
 
 ### 2. Delete `/factory-lite:spec` — Superpowers' brainstorming does the job better
 - **Wish:** remove `skills/spec/SKILL.md` from the plugin and let `superpowers:brainstorming` write
@@ -165,6 +171,38 @@ settings that change what the harness can be trusted to prove.
   close:** it was stopped by the human right after the CLAUDE.md edit, with its own steps 7-9
   (including `invoke writing-plans`) still ahead of it — so we do **not** yet know whether it
   would have handed off to a competing plan document. Let it run to its own end before acting.
+- **Evidence (Step 7, 2026-09-12): the caveat did NOT resolve against this item, and the sentence
+  above about the competing design doc is withdrawn as unverified.** In `~/dev/coach` brainstorming
+  again wrote a correct `SPEC.md` unprompted — 10 numbered requirements, an out-of-scope list that
+  fences the workout recommender, `CLAUDE.md`'s title and one-liner filled — **and also** wrote a
+  303-line `docs/superpowers/specs/2026-09-12-nutrition-fitness-tracker-design.md`. That is **not**
+  a reversal of Step 5, because the two runs were on different paths and the skill *mandates* the
+  doc on one of them. `brainstorming/SKILL.md` has a **Bounded** path (5 steps, step 5 says "no plan
+  document" in as many words) and an **Architectural** path whose **step 6 is "Write design doc —
+  save to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md` and commit"**. The coach run
+  declared `Path: architectural` in its first message. The Step 5 run **never declared a path at
+  all** — its only path statement was that it could not yet classify the work. So coach wrote the
+  doc *because its path told it to*, and Step 5 not writing one is evidence of restraint only if
+  Step 5 was also Architectural, which is unestablished.
+  **So `BACKLOG.md`'s own "steps 7-9 still ahead of it" is a reconstruction, not an observation:**
+  on the Architectural path step 6 precedes 7-9, so a run stopped there would have left a design
+  doc, and none exists. On the Bounded path there are no steps 7-9 to be ahead of. It can no longer
+  be settled — `~/dev/scratch-super` has been deleted and the transcript is the entire record.
+  Measured like-for-like the runs differ on `superpowers/specs` occurrences (**2 vs 37**) and on the
+  path declaration; `writing-plans` is **10 vs 10** and discriminates nothing.
+- **Defect in the pre-registered bar, recorded rather than re-scored.** `docs/subguides/step-7.md`
+  §5c row 5 ("no `docs/` directory and no `*-design.md` created") can only be *failed* by an
+  Architectural run and only *passed* by a Bounded one, so it scores **path selection**, not the
+  behaviour this item is about. The scorecard never named a path. The honest record is that the bar
+  was not met **and** two of its criteria were poorly specified. A future scorecard fixes the path
+  first, or scores the design doc only when the path did not call for one.
+- **Status (Step 7): still waiting, and for a new reason.** Rows 1, 2, 4 and 8 passed; row 3 failed
+  (`## Deferred` arrived pre-populated with 10 items — path-independent, so this one stands); rows 6
+  and 7 are **open** — the run is parked at its own step 8, user review, with `writing-plans` not
+  yet invoked. The finding nobody predicted is the one that matters: **two identical starting
+  conditions — fresh factory-lite template, no code, placeholder `SPEC.md` — were classified onto
+  different paths.** Until path selection is predictable, "does brainstorming write a competing
+  document?" has no stable answer, and `spec` cannot be deleted on the strength of it.
 - **Delete when:** n/a — this *is* a deletion. **Trigger to act:** if brainstorming again writes a
   correct `SPEC.md` unprompted in Step 7's first real project, delete `spec` in that release. One
   observation is not enough; deletions get the same evidence bar as additions.
@@ -260,3 +298,38 @@ settings that change what the harness can be trusted to prove.
 - **Status:** waiting, on **zero** observations. Explicitly **not** to be built on the strength of
   the prediction above — that is the accretion failure mode LESSONS records for v2, where every
   addition sounded good on paper. It needs a project that actually got bitten.
+
+### 7. The Stop gate's own delete-when condition cannot be measured
+
+- **Wish:** the gate should leave enough of a trace that "`prove.sh` passes first time on >95% of
+  the stops where the gate actually ran" is countable afterwards. Candidates, **none chosen**: a
+  one-line `systemMessage` on PASS; an append-only counter next to the existing `$marker.count`; or
+  nothing at all, on the grounds that a gate which announces its successes is a gate that gets
+  tuned out, and a tally kept by hand during the three sessions is cheap enough.
+- **Assumption it encodes:** that a component carrying a quantitative retirement condition should
+  be able to produce the quantity, or the condition is decoration and the component is permanent by
+  default.
+- **Evidence:** Step 7, `~/dev/coach`, found while trying to fill in §8's tally. Three separate
+  measurement failures, all in one sitting:
+  1. **A pass is silent.** `hooks/stop-gate.sh:71-74` writes the marker, clears the count file and
+     exits 0 with no output. The unchanged-tree skip at `:59-61` is *also* a silent exit 0. So the
+     two cases §8 must tell apart — *ran and passed* versus *skipped, nothing changed* — are
+     indistinguishable from outside. Only blocks (exit 2, stderr), `dormant`, and the 3-strike
+     release emit anything at all.
+  2. **Blocks double-count.** Every hook firing is written to the transcript **twice**, as
+     `.attachment.stdout` and `.attachment.content`, same text, same timestamp to the millisecond.
+     A naive count of the coach run's dormant announcements gave 8; the real figure is **4**
+     (17:26:02, 17:28:02, 17:34:06, 17:37:05).
+  3. **Prose counts as firings.** In the factory-lite transcripts the gate is *discussed*, and
+     those mentions match the same strings. One session matched the block string 13 times across 9
+     user/assistant records with **zero** actual firings. This matters most precisely where the
+     sessions 2-3 tally will be read from.
+  Errors 1 and 2 push the measured ratio in **opposite** directions, and neither is visible unless
+  you go looking. The counting rule that survives all three is in `LESSONS.md`.
+- **Delete when:** n/a until something is chosen.
+- **Status:** waiting, on one project's observation, and deliberately **not** decided in Step 7 —
+  the step's guardrail forbids changing the harness mid-project, and every candidate above is a
+  change to gate behaviour. Note the circularity this item sits on: the gate's delete-when is the
+  main reason to collect the number, so a gate that cannot report it is a gate that cannot be
+  retired on evidence. That is an argument for fixing the measurement, **not** an argument that the
+  gate has earned permanence.

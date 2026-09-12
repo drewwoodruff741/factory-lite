@@ -461,3 +461,31 @@ depend on.
   and read the allowlist's mtime — grants are evidence that permissions were live.* Also: tell the
   human to answer such a probe **Yes**, not **Always**, or the probe silently pollutes the allowlist
   and cannot be repeated.
+- **Step 7: how to count hook firings in a `.jsonl` transcript, because three separate ways of
+  getting it wrong all showed up in one sitting.** The §8 gate tally is a ratio, so every counting
+  error lands directly on a delete-when decision. The rule, in this order:
+  1. **A firing is a record with `type == "attachment"`.** Mentions inside `type == "user"` or
+     `type == "assistant"` records are the gate being *discussed*, not the gate running. This
+     clause matters most in the `factory-lite` transcripts — which is both where the gate gets
+     discussed and where the sessions 2-3 tally has to be read from. One session matched the block
+     string **13 times across 9 prose records with zero firings**.
+  2. **Then de-duplicate.** Each firing is written **twice**, as `.attachment.stdout` and
+     `.attachment.content`, with identical text and the same timestamp to the millisecond. Filter
+     to `stdout`, or count distinct timestamps. The coach run's raw count of 8 dormant
+     announcements is **4** firings.
+  And underneath both: **one counting method per comparison.** `grep -c` counts *lines*, `grep -o |
+  wc -l` counts *occurrences*, and in `.jsonl` a single line carries an entire message — including
+  a whole skill body — so mixing the two manufactures order-of-magnitude contrast out of identical
+  content. That error produced a phantom "2 vs 10" difference between two brainstorming runs that
+  are in fact 10 vs 10, and it was then *reproduced minutes after the rule against it was written*,
+  by subtracting a record count from an occurrence count and inferring four records that do not
+  exist. The general form: *a number read out of a transcript is a measurement, so state its unit
+  and its filter before you compare it to anything.*
+- **Step 7: a component with a quantitative delete-when has to be able to produce the quantity.**
+  The Stop gate retires when `prove.sh` passes first time on >95% of the stops where it ran — and
+  `hooks/stop-gate.sh` exits **silently** on a pass (`:71-74`) and equally silently on the
+  unchanged-tree skip (`:59-61`), so the numerator and the excluded case look identical from
+  outside, while blocks are double-written and therefore over-count. The two errors push the ratio
+  in **opposite** directions. Recorded as `BACKLOG` item 7 and deliberately not fixed mid-project.
+  The trap to avoid next time is treating this as evidence the gate has earned permanence: it is
+  evidence the *measurement* was never designed, which is a different thing and a cheaper fix.
