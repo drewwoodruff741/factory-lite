@@ -20,7 +20,7 @@ Total: about a week of evenings. The first real project starts at step 7.
 
 ---
 
-## [ ] Step 0: Files out of the chat and into WSL (≈ 15 min, no Claude session needed)
+## [x] Step 0: Files out of the chat and into WSL (≈ 15 min, no Claude session needed)
 
 Download `factory-lite.zip`; it lands in Windows Downloads. Open a WSL window in VS Code
 (Remote-WSL) and, in its integrated terminal:
@@ -133,7 +133,7 @@ Hard constraints:
 
 ---
 
-## [ x] Step 1: Environment ready (≈ 30 min)
+## [x] Step 1: Environment ready (≈ 30 min)
 
 **Goal:** a WSL2 Ubuntu machine where every tool in the stack exists and the extension talks to it.
 
@@ -484,6 +484,21 @@ components as it did after step 3, or fewer.
 **Guardrails:** the only way a component enters FACTORY is with evidence from a shipped project.
 
 ---
+
+## Finished — 2026-09-12
+
+All ten steps are done. FACTORY-lite is **v3.3.2**, published, with one project built on it and
+hardened (`~/dev/coach`). **There will be no second project**, which is a decision rather than an
+accident, and `BACKLOG.md`'s **Close-out** section is what it changes: the forward pass goes dormant
+because the evidence source has narrowed to one live project, the **reverse pass keeps its full
+force** on every model or client release, and two shipped instructions are labelled known-untested
+rather than left looking confirmed. The Stop gate is **kept by decision, not by evidence** — its
+removal experiment is runnable and deliberately not being run.
+
+From here the only standing ritual is the twenty-minute close-out procedure in `BACKLOG.md`, on a
+client or model release that changes the built-in agents, skills or commands. Nothing else. If a
+genuinely new project ever appears, the full review procedure resumes and BACKLOG item 2 is the
+first thing to reopen.
 
 ## Finished means
 

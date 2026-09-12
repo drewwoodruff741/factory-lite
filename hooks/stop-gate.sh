@@ -12,6 +12,10 @@
 #   survives. What the experiment must never conclude is that neither is needed; it compares two
 #   FACTORY components, it does not test the model bare. (Named by ~/dev/coach, 2026-09-12, the
 #   first project to read this condition and notice it could not run it.)
+#   Close-out status, 2026-09-12: this gate is KEPT BY DECISION, not by evidence. The experiment
+#   above is runnable -- on coach, on one hardening item -- and the judgement is that a harness in
+#   maintenance should not degrade its one working project to study itself. Labelled rather than
+#   left to rot into permanence, which is what an unrunnable delete-when becomes.
 #   The old condition -- "prove.sh passes first time on >95% of the stops where the gate ran" --
 #   was retired at Step 9 after two projects showed it cannot be read even when counted live:
 #   a pass and an unchanged-tree skip were both a silent exit 0 (fixed below, in the PASS arm);

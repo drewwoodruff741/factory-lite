@@ -69,7 +69,12 @@ shows the prose was doing the work. Stage it instead: **remove the hook, keep th
 check still runs before every stop, the hook is the redundant component and the ~50-token rule is the
 cheaper one that survives — a real result, and the one the evidence has been pointing at since Step 8.
 The conclusion the experiment must never reach is "neither is needed": it compares two FACTORY
-components against each other, it does not test the model with nothing. The `spec`/`harden` row is the caution worth carrying:
+components against each other, it does not test the model with nothing.
+
+**Close-out status: the gate is kept by decision, not by evidence** (`BACKLOG.md`, Close-out). The
+experiment is runnable and is deliberately not being run — a harness in maintenance should not
+degrade its one working project in order to study itself. That is a judgement, it is labelled as
+one, and it is a better resting state than a retirement condition nobody can execute. The `spec`/`harden` row is the caution worth carrying:
 its old wording ("you stop skipping them") technically fired — neither command was typed in the
 one real project — while both rituals were performed anyway, one of them by reading the skill file
 as a document. *Measure the artifact, not the invocation.* (`verify` had no row at all until Step 9

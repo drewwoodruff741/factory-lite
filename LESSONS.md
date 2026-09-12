@@ -732,3 +732,33 @@ depend on.
   was the project downstream of it, within a day, and it found what the release review did not.**
   The reverse pass was designed to be run by whoever holds the harness; it turns out the projects
   can run it too, and they are standing closer to the evidence.
+- **Close-out: "a second project" is the most expensive words you can put in a reopen trigger.**
+  Step 9 rejected five backlog items and gave each a named trigger, which is the rule that makes
+  rejecting cheap enough to do honestly. Four of those triggers said *a second project* — and the
+  next day the decision came that there would not be one. Three were retargeted at the single live
+  project; one was unreachable and the item closed for good. The triggers were not careless: at the
+  time they were written a second project was the obvious next thing, and "one project's observation
+  is one observation" is the rule that made them the right shape. The lesson is narrower and it is
+  about dependency, not about discipline: **a trigger that depends on work you have not committed to
+  is a deferral wearing a condition's clothes.** Prefer a trigger the system you already have can
+  fire — for these items that turned out to be "coach is bitten", "coach is found running against a
+  damaged spec", "a work-in-progress push reaches coach" — and when only an uncommitted project
+  could fire it, say so and close the item instead of leaving it open against a future that may not
+  arrive.
+- **Close-out: a harness that stops growing still rots, but by a different mechanism, and only one
+  half of the loop defends against it.** The forward pass consumes shipped-project evidence, so with
+  one project in maintenance it goes quiet on its own. The reverse pass does not, because its input
+  is not *your* work — it is the client's. `explorer` was a defensible component until the day
+  Claude Code shipped `Explore`, and nothing about FACTORY changed on that day; the world moved
+  underneath it. So the close-out keeps the reverse pass at full strength and retires the forward
+  pass, with the trigger changed from "after a project ships" to "after a model or client release".
+  *Accretion is the failure mode of a harness that is being used; obsolescence is the failure mode
+  of one that is finished, and they need different passes.*
+- **Close-out: label the untested instead of deleting it or trusting it.** Two instructions shipped
+  in v3.3.x can now never be exercised — the `brainstorming` step-5 stop (it applies at spec time,
+  and no spec time remains) and the gate's removal experiment. Deleting them would discard findings
+  that cost two projects to obtain; leaving them unmarked would let a future reader mistake
+  *shipped* for *confirmed*, which is the same error as mistaking a green test suite for a tested
+  one. They are tabled in `BACKLOG.md` with why they cannot be tested and what would let them be.
+  The same move applies to the gate itself: **kept by decision, not by evidence**, written on the
+  component. An honest label is a better resting state than a retirement condition nobody can run.

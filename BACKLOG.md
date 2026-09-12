@@ -108,6 +108,66 @@ Run `./prove.sh`, apply the release rule in full (it is a component change the m
 *found* into `LESSONS.md` — not what it decided. The decisions live here; the evidence has to be
 readable by the next pass, which will have forgotten this one.
 
+## Close-out (2026-09-12) — the plan is finished, and there will be no second project
+
+All ten steps of `START-HERE.md` are done and FACTORY-lite is **complete as a build**. One project
+was built on it and hardened. There will not be another. That last fact is not a footnote — it
+changes what this file is for, and pretending otherwise would leave a backlog of conditions that can
+never fire, which is the exact rot the review procedure above exists to prevent.
+
+**What the decision costs, stated plainly.** Four reopen triggers named "a second project". Three
+were retargeted at `~/dev/coach`, which is still live and still the only evidence source; one —
+item 2's — is **unreachable and the item is closed for good**. Two shipped instructions can now
+never be exercised and are recorded as **known-untested** rather than left looking settled: item 9's
+arbitration clause in `pre-alpha` (it applies at spec time, and no spec time remains) and, unless
+someone deliberately runs it, the Stop gate's removal experiment.
+
+**The forward pass goes dormant. The reverse pass does not.** The forward pass runs on
+shipped-project evidence, and with one project in maintenance the flow of new evidence is a trickle
+rather than a source — coach can still bite (items 6 and 8 are live), but nothing new will arrive at
+the rate that made a standing procedure worth having. The **reverse pass keeps its full force**, and
+its trigger is no longer "after a project" but **"after a model or client release"**. That trigger is
+not theoretical: `explorer` was defensible until the day the client shipped `Explore`, and nothing
+except the reverse pass would ever have noticed. A harness that stops growing still rots, just more
+quietly, and it rots by the world moving underneath it rather than by accretion.
+
+### The close-out procedure
+
+Run this, and nothing else, on a Claude Code or model release that changes the built-in agents,
+skills or commands. Twenty minutes.
+
+1. **`claude --version`**, and note what the release changed.
+2. **Reverse pass only** — `README.md` §1's table, five rows. For each: has the delete-when fired,
+   and *is the component now duplicated by something the client ships*? That second question is the
+   one that pays. Delete what has expired.
+3. **`./prove.sh`** — it enforces release-rule steps 1-3 by itself.
+4. If anything changed: the **full release rule**, because `~/dev/coach` is downstream of every push
+   and receives it the next time that project updates its plugins.
+5. If nothing changed, write nothing. A pass that finds nothing is a result, and a note saying so is
+   the kind of accretion this harness exists to refuse.
+
+**What is explicitly not in the close-out:** running the forward pass on a schedule, adding
+components, "improving" the template, or reopening decided items without the trigger they name. The
+five rejections above are decisions, not deferrals. If a genuinely new project ever appears, the
+full procedure resumes and item 2 is the first thing to re-open.
+
+### Status of the two untested instructions
+
+Neither is a defect and neither should be removed for being untested — they encode findings that
+were expensive to obtain, and removing them would discard the finding along with the instruction.
+They are marked so that a future reader does not mistake "shipped" for "confirmed".
+
+| Instruction | Where | Why it cannot be tested | If it ever can be |
+|---|---|---|---|
+| Stop at `brainstorming`'s architectural step 5; SPEC.md is the only planning artifact | `skills/pre-alpha/SKILL.md` | applies at spec time; no spec time remains | a new project's first session |
+| The gate's removal experiment (remove the hook, keep the prose) | `hooks/stop-gate.sh` header, `README.md` §1 | needs a project willing to drop its safety net for a phase | one of coach's remaining hardening items, by deliberate choice |
+
+**The Stop gate is therefore kept by decision, not by evidence, and that is written down on
+purpose.** Its delete-when is runnable — on coach, on one hardening item, at the cost of a phase
+without the net — and the judgement here is that a harness in maintenance should not degrade its one
+working project to study itself. Whoever picks this up later gets the experiment, the reasoning, and
+an honest label instead of a condition quietly rotting into permanence.
+
 ## Decided in Step 6: the template pins both plugins
 
 `template/.claude/settings.json` enables **both** `factory-lite@factory` and
@@ -376,10 +436,13 @@ evidence has told you something, and five of them had.
 - **What would reopen it** is no longer "a third project where brainstorming writes a correct
   SPEC.md" — there are two of those. It is a project where brainstorming is **stopped at
   architectural step 5** (see item 9, corrected: the Bounded path is unreachable for a new project
-  by brainstorming's own rule) and still produces a correct `SPEC.md` with no document chain. If
-  that holds, the wish was never "delete `spec`"; it was "invoke brainstorming in a way that cannot
-  start a chain", which item 9 shipped as prose in v3.3.0 at no cost — **so the next project
-  observes this for free**, because v3.3.0 now tells it to stop at 5.
+  by brainstorming's own rule) and still produces a correct `SPEC.md` with no document chain.
+  **Close-out, 2026-09-12: that trigger is now unreachable and the item is closed for good.** There
+  will be no second project, and `~/dev/coach` is long past spec time — nothing will run
+  `brainstorming` from a fresh scaffold again. `spec` stays, permanently, on the evidence as it
+  stands: it writes the artifact and stops, which is more than the alternative does. The clause
+  item 9 shipped to make this comparison observable will therefore never be observed — recorded as
+  a **known-untested instruction** rather than left looking settled.
 
 ### 3. Trim `verify` item 2 — Superpowers says it better
 - **Wish:** cut or shorten item 2 of `skills/verify/SKILL.md` ("show evidence, don't assert").
@@ -484,9 +547,11 @@ evidence has told you something, and five of them had.
   single decision, "don't push work in progress to `main`", and none of the candidates (release
   branch, pinned `ref`, second marketplace entry) removes that decision — they relocate it, and
   charge a permanent piece of machinery for the move. One project downstream is not enough to buy
-  it. **Reopen when:** a work-in-progress push actually reaches a project, or a **second** project
-  exists downstream of `main` — two consumers is where "don't push" stops being one person's
-  discipline and starts being a coordination problem.
+  it. **Reopen when:** a work-in-progress push actually reaches `~/dev/coach`. The other half —
+  "or a **second** project exists downstream of `main`" — is **struck at close-out, 2026-09-12:
+  there will be no second project**, so the coordination problem this item was saving itself for
+  cannot arrive. One consumer, one habit, and the mechanical half of the release rule is enforced by
+  `./prove.sh` either way.
 
 ### 6. A project's own data files make the gate re-run on every turn
 - **Wish:** something should stop a project's runtime data from being counted as a source change.
@@ -529,9 +594,11 @@ evidence has told you something, and five of them had.
   available, wanted or missed. **Zero noisy gate runs have been observed in two projects**, which is
   precisely the observation the item's own status line said it required. Per procedure rule 5, the
   candidate holding the only evidence either way is "nothing at all, because this is the project's
-  job", and that is now the decision rather than the default. **Reopen when:** a project is actually
-  bitten — the gate re-running on every turn because of files the project did not think to ignore,
-  observed, not predicted.
+  job", and that is now the decision rather than the default. **Reopen when:** `~/dev/coach` is
+  actually bitten — the gate re-running on every turn because of files it did not think to ignore,
+  observed, not predicted. **This trigger survives close-out (2026-09-12)**: coach is mid-backlog,
+  and each hardening item can introduce tooling that writes into the working directory, which is
+  exactly how `.pytest_cache/` and `.ruff_cache/` arrived.
 
 ### 7. The Stop gate's own delete-when condition cannot be measured
 
@@ -713,10 +780,12 @@ evidence has told you something, and five of them had.
   lite section is *exactly one check*, the walking-skeleton check, and shipping a seven-heading spec
   assertion inside it makes every new project's pre-alpha start with two. Coach added its assertion
   at **hardening**, which is where a second check belongs and where `harden` step 5 already asks for
-  one. **Reopen when:** a second project loses `SPEC.md` content, **or** a project is found to have
-  been running against a damaged `SPEC.md` without noticing. The second is the dangerous case — the
-  first was caught within one session by the `reviewer` agent, and nothing currently would surface
-  the second.
+  one. **Reopen when:** `~/dev/coach` is found to have been running against a damaged `SPEC.md`
+  without noticing. **Retargeted at close-out, 2026-09-12** — "a second project loses `SPEC.md`
+  content" is struck, no second project is coming, and the surviving half is the dangerous one
+  anyway: the first loss was caught inside one session by the `reviewer` agent, while a silent one
+  has nothing watching for it. Coach's own `prove.sh` asserts its seven headings, which is that
+  check, in the project, where item 6's evidence says it belongs.
 
 ### 9. Superpowers and FACTORY give contradictory instructions, and nothing arbitrates
 
