@@ -12,9 +12,16 @@ proj="$tmp/proj"; mkdir -p "$proj"; ( cd "$proj" && git init -q )
 export CLAUDE_PROJECT_DIR="$proj"   # what Claude Code exports for hooks; the gate's fallback when jq is absent
 "$here/scripts/init.sh" "$proj" >/dev/null
 
-# 1. Placeholder prove.sh fails on purpose -> gate must block (exit 2)
+# 1. The untouched template placeholder -> gate is dormant (exit 0) and says so.
+#    Gating here would block the first turn of a fresh project before any code exists (Step 4).
+out="$(printf '{"cwd":"%s","session_id":"smoke1","stop_hook_active":false}' "$proj" | bash "$gate" 2>/dev/null)" \
+  || fail "gate blocked on the untouched template placeholder"
+printf '%s' "$out" | grep -q dormant || fail "a dormant gate must announce itself"
+
+# 1b. A real check that fails -> gate blocks (exit 2). This is the contract that matters.
+printf '#!/usr/bin/env bash\necho "real check failed" >&2\nexit 1\n' > "$proj/prove.sh"; chmod +x "$proj/prove.sh"
 rc=0
-printf '{"cwd":"%s","session_id":"smoke1","stop_hook_active":false}' "$proj" | bash "$gate" 2>/dev/null || rc=$?
+printf '{"cwd":"%s","session_id":"smoke1b","stop_hook_active":false}' "$proj" | bash "$gate" 2>/dev/null || rc=$?
 [ "$rc" -eq 2 ] || fail "expected exit 2 for a failing prove.sh, got $rc"
 
 # 2. Passing prove.sh -> gate exits 0

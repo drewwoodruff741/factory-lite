@@ -73,6 +73,18 @@ Hard constraints:
   matters downstream: v2's whole harness cost ~10.5k above the 32.3k floor, so v3 is judged
   against 10.5k — and Step 2's finding was that v2's damage was behavioural, not contextual, so a
   small /context number is necessary but never sufficient.
+- Step 4 is done, do not redo any of it: the gate was watched live in the extension — three
+  consecutive blocks on a premature stop, the 3-strike loop-guard release, and clean stops on a
+  green tree. v3 startup is **34.7k, i.e. +2.4k above the 32.3k floor** against v2's ~10.5k
+  (LESSONS.md has the breakdown; ~1.9k of that 2.4k is an unexplained system-tools delta that is
+  probably not ours). The harness is now **v3.0.1**: the Stop gate is dormant while `prove.sh`
+  still holds the template TODO, because gating on it blocked the first turn of a fresh project,
+  `/factory-lite:spec` included. Three interface facts worth keeping: the **CLI and the extension
+  keep separate trust records** (a CLI "workspace not trusted" warning says nothing about what a
+  session loaded); `claude plugin details <name>` **does** work on a skills-dir plugin once the
+  folder is CLI-trusted, and reports ~377 tok always-on for factory-lite; and a slash command
+  typed in the window open on the *harness repo* returns "Unknown command" because no plugin is
+  loaded there.
 - Step 3 is done, do not redo any of it: the scaffold is published at
   github.com/drewwoodruff741/factory-lite (public), default branch `main`, tagged `v3.0.0`, both
   `<your name>` blanks filled with "Drew", and `template/.claude/settings.json` already pins that
@@ -190,7 +202,7 @@ step's Done-when asks for.
 
 ---
 
-## [ ] Step 4: Prove the harness live, inside the extension (≈ 1 hour)
+## [x] Step 4: Prove the harness live, inside the extension (≈ 1 hour)
 
 **Goal:** see the Stop gate block and release once, with your own eyes, without the TUI.
 
@@ -209,6 +221,15 @@ whole loop on something trivial: `/factory-lite:spec` a CLI that prints hello �
 **Done when:** you watched the gate block a premature stop and release after the check passed,
 and `/context` for the scratch project is recorded next to v2's in LESSONS.md.
 
+> **Outcome (2026-09-12).** Done. The defect this step existed to find: the gate blocked the first
+> turn of a fresh project, because the template `prove.sh` exits 1 by design and the Stop hook
+> fires on every turn — including `/factory-lite:spec`, whose own rule is "write no code". Fixed in
+> v3.0.1 (dormant until a real check replaces the TODO, and it says so each stop); smoke test 1 had
+> encoded the old contract and was inverted. Two wording traps in `skills/harden/SKILL.md` closed:
+> it named a `PROFILE=lite` literal that isn't in the template, and demanded a typecheck on a
+> machine with no type checker. The live method is confirmed as written: symlink under
+> `<scratch>/.claude/skills/factory-lite/`, pin keys stripped, `factory-lite@skills-dir`.
+>
 > **Corrected after Step 2.** The original Done-when — "`/context` is a fraction of v2's" — cannot
 > be satisfied. v2's startup was **42.8k**, of which **32.3k is the empty-folder floor**; its whole
 > harness cost only **~10.5k**. Nothing can be a fraction of that. Judge v3 on *what it adds above
@@ -239,7 +260,9 @@ because nothing was installed yet.
 
 **Goal:** Superpowers is installed where it belongs and nothing in FACTORY duplicates it.
 
-**Bring to the session:** the Context block and the `/context` number from step 4.
+**Bring to the session:** the Context block. The step-4 number is already in it: **34.7k startup,
++2.4k above the floor**, of which the plugin's own share is ~560 tok. That is the baseline
+Superpowers is measured against — not the raw 34.7k.
 
 **The session produces:** how to add the `anthropics/claude-plugins-official` marketplace and
 install `superpowers` at **project scope** from Customize → Plugins in the extension; how to

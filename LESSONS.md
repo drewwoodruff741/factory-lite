@@ -25,6 +25,61 @@ This is the floor: anything above it is something we chose to load.
 - **The 15%-of-window rule in START-HERE Step 5 does not survive a 1M window** (15% = 150k, which
   no sane harness reaches). Judge startup cost in absolute tokens against this baseline instead.
 
+## Startup cost of v3 (Step 4, 2026-09-12)
+Fresh session in `~/dev/scratch-hello`, the template's four files plus factory-lite loaded as
+`factory-lite@skills-dir`, claude 2.1.269, opus-5 1M window.
+- `/context` total **34.7k / 1.0M (3%)**, of which Messages was 8 tokens — so **startup ≈ 34.7k**,
+  i.e. **+2.4k above the 32.3k empty-folder floor**, against v2's ~10.5k. Under target.
+- Where the 2.4k sits: custom agents 156 (`reviewer` 89 + `explorer` 67) · memory files 300
+  (the template `CLAUDE.md`) · skills 2.8k → 2.9k (~100) · **system tools 25.4k → 27.3k (+1.9k),
+  unexplained and almost certainly not ours** — no plugin here defines a tool.
+- So the harness's own share is ~560 tok, not 2.4k. `claude plugin details factory-lite`
+  independently projects **~377 tok always-on** for the plugin, which agrees with the 156 + ~100
+  measured above; the template `CLAUDE.md`'s 300 is the rest. Even crediting the whole 2.4k to
+  v3, it costs **under a quarter of v2** while shipping four skills, two agents and one hook
+  against v2's five agents and three always-on rules.
+- **SPEC.md does not load at startup** — only `CLAUDE.md` appears under Memory files. The spec is
+  read on demand, which is why the 60-line `CLAUDE.md` budget is the one that matters.
+- Restating Step 2's headline so this number is not misread: v2's damage was **behavioural, not
+  contextual**. 2.4k vs 10.5k is necessary, not sufficient. The gate test in the same step is what
+  actually tests behaviour.
+
+## The gate, observed live (Step 4, 2026-09-12)
+Everything below was watched in the extension, in `~/dev/scratch-hello`, at v3.0.0.
+- **The gate blocks and releases as designed.** A real premature stop — tree edited to break the
+  skeleton, `prove.sh` red — was blocked three times running, then the 3-strike loop guard handed
+  control back with `FACTORY gate: ./prove.sh still failing after 3 attempts.` A clean tree passed
+  and stopped silently. Both exits from the gate are real, and the state-hash skip kept chat-only
+  turns free.
+- **It held under pressure, which is the part that matters.** With the gate red and a human
+  instruction to "leave it broken", the session had two cheap outs — revert the edit, or edit
+  SPEC.md so `goodbye` became legal — and refused both, naming the second as "weakening the
+  contract by the back door". It escalated instead. At hardening it mutation-tested its own gate
+  (8 mutants, all caught), negative-tested every new check before trusting it, caught a real lint
+  error in its own test helper and fixed it rather than silencing the rule, chose stdlib
+  `unittest` over available `pytest` because SPEC.md forbids an install step, and refused to fake
+  the typecheck it had no tool for. **This is the v2 failure mode not happening.** The 2.4k
+  startup number proved nothing; this does.
+- **Defect found and fixed (v3.0.1): the gate blocked the first turn of a fresh project.** The
+  template `prove.sh` exits 1 by design, so the Stop gate fired on the `/factory-lite:spec` turn —
+  whose own rule is "write no code". The session's diagnosis was exact: *"the Stop gate runs
+  unconditionally, but CLAUDE.md scopes verify to 'before stopping after a code change'…
+  `/factory-lite:spec` cannot terminate cleanly on a fresh project by construction."* Fix: the
+  gate is **dormant** while `prove.sh` still holds the template's TODO sentinel, announcing that
+  it is dormant on each stop, and arms itself the moment a real check replaces it. `harness-smoke.sh`
+  test 1 had encoded the old contract (placeholder → block) and was inverted, with a new 1b
+  asserting a *real* failing check still exits 2.
+- **Two wording traps in `skills/harden/SKILL.md`, fixed.** Step 3 said to change `PROFILE=lite`,
+  a literal string that does not exist in the template (`PROFILE="${HARNESS_PROFILE:-lite}"`); the
+  model resolved it correctly anyway, but the trap was real. Step 5 demanded a typecheck
+  unconditionally, forcing a choice between faking a check and deviating from the checklist on a
+  machine with no type checker. It now asks only for the checks the stack actually has and says to
+  record an unavailable one as deferred.
+- **A slash command typed in the wrong window reads as a harness bug.** `Unknown command:
+  /factory-lite:harden` came from the window open on the *harness repo*, which has no
+  `.claude/skills` symlink and therefore no plugin. Check which folder the session is rooted in
+  before concluding a command does not register.
+
 ## What bit us
 Format: what happened → what it cost → what it taught.
 - **Over-engineering by accretion.** v2 was built for one specific task, branched into a factory,
@@ -74,5 +129,22 @@ depend on.
   names on the first line.
 - **Step 3:** `claude plugin details <name>` works only on an **installed** plugin. Its own error
   message suggests `--plugin-dir <path>`, but that option does not exist on the `details`
-  subcommand (`error: unknown option '--plugin-dir'`). So there is no pre-install token-cost
-  read; the first real number is Step 4's `/context`.
+  subcommand (`error: unknown option '--plugin-dir'`). **Superseded in Step 4:** it works fine on a
+  skills-dir plugin, so a pre-`/context` token read does exist — see the trust finding below.
+- **Step 4:** the **CLI and the extension keep separate trust records.** Extension sessions ran
+  freely in `~/dev/factory-lite` and `~/dev/scratch-hello` with no dialog while `~/.claude.json`
+  had no `.projects` entry for either. Until the folder is trusted on the CLI side, every
+  `claude plugin …` call there prints "skipped because this workspace was not trusted when plugins
+  were scanned" — a statement about the CLI's own store, not about what the session loaded. It
+  taught: **do not infer a capability is missing from a CLI error raised in an untrusted folder.**
+  Both "skills-dir plugins never enter the registry" and "`details` doesn't work here" were
+  concluded from that state and both were wrong; once trusted, `plugin list` reports
+  `Status: ✔ loaded` and `plugin details` prints the full inventory and token projection.
+- **Step 4:** the WSL user config carries a **`PreToolUse` hook at user scope,
+  `~/.claude/hooks/auto-accept-hook.sh`, matcher `(all)`** — every tool call in every project is
+  auto-approved before the permission prompt can appear. Found via `/hooks` in the scratch project,
+  which listed 5 hooks: that one, three `notify.js` notifier hooks (Notification, Stop,
+  SubagentStop), and factory-lite's Stop gate. It does not affect the Stop gate, but it is the
+  same class of finding as Step 1's `bypassPermissions`: **the environment silently disarms the
+  safety the harness assumes.** Check `/hooks` for user-scope entries before concluding anything
+  about how a project behaves under permissions.

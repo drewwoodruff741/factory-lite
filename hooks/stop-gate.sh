@@ -7,6 +7,7 @@
 #
 # Behaviour:
 #   - No executable ./prove.sh in the working dir  -> exit 0 (no gate; lite by design)
+#   - ./prove.sh is still the template placeholder -> exit 0 with a notice (dormant, see below)
 #   - Nothing changed since the last PASS          -> exit 0 (don't re-run on chat-only turns)
 #   - prove.sh passes                              -> exit 0 and remember the tree state
 #   - prove.sh fails                               -> exit 2 with the tail of its output (Claude keeps working)
@@ -31,6 +32,15 @@ sid="$(field '.session_id')"; [ -z "$sid" ] && sid="nosession"
 
 cd "$cwd" 2>/dev/null || exit 0
 [ -x ./prove.sh ] || exit 0
+
+# Dormant while ./prove.sh is still the untouched template placeholder, which exits 1 on purpose.
+# Evidence (Step 4): gating on it blocks the very first turn of a fresh project — including
+# /factory-lite:spec, whose own rule is "write no code" — so the session cannot end cleanly by
+# construction. The gate arms itself the moment a real check replaces the TODO.
+if grep -q 'TODO: write the walking-skeleton check' ./prove.sh 2>/dev/null; then
+  printf '%s\n' '{"systemMessage":"FACTORY gate: dormant. ./prove.sh is still the template placeholder, so nothing is being enforced. It arms as soon as you replace the TODO with the real check from SPEC.md (Proven by)."}'
+  exit 0
+fi
 
 # Tree state = HEAD + staged/unstaged diff + content of untracked (non-ignored) files.
 if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
