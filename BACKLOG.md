@@ -114,8 +114,10 @@ settings that change what the harness can be trusted to prove.
    two keys and `permissions.defaultMode: "auto"` were removed by hand; `files.eol` and the three
    `notify.js` hooks were left alone. Pre-edit snapshots of both states (09:07 teardown-time, and
    `*.PRE-1c.json` hand-edit-time) are in `~/backups/factory-lite-chore1-2026-09-12/`.
-   Remaining confirmation: the §1d `/hooks` check, which needs a session started *after* the
-   machine-settings edit.
+   **§1d confirmed the same day:** `/hooks` lists exactly three `notify.js` hooks at User scope
+   (`Notification`, `Stop`, `SubagentStop`) and **no** `PreToolUse` entry — down from four. The
+   half of §1d that a client command cannot show, that a tool call now raises a permission dialog,
+   is confirmed by the first session started after the machine-settings edit.
 
 2. **Delete `~/dev/.claude/settings.local.json`.** **Status: done 2026-09-12** (the directory is
    now empty). Stale leftover from Step 0, when `~/dev` was
