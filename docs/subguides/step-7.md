@@ -118,9 +118,21 @@ session afterwards and we continue from §1c.
 
 ### 1c. I verify, and hand-clean what survives
 
-I snapshotted all six files to the scratchpad before the teardown, so this is a diff, not a guess.
-I check all five rows in the table above and report each as clean or not. Then, whatever the
-teardown left:
+All six files were snapshotted **before** the teardown, so this is a diff, not a guess. They are at
+a durable path, not a session scratchpad, because §1b kills the session that took them:
+
+```
+~/backups/factory-lite-chore1-2026-09-12/
+  machine-settings.json            <- ~/.vscode-server/data/Machine/settings.json
+  user-settings.json               <- ~/.claude/settings.json
+  user-settings.local.json         <- ~/.claude/settings.local.json
+  auto-accept-hook.sh              <- ~/.claude/hooks/auto-accept-hook.sh
+  dev-settings.local.json          <- ~/dev/.claude/settings.local.json          (chore 2)
+  factory-lite-settings.local.json <- ~/dev/factory-lite/.claude/settings.local.json (chore 3)
+```
+
+Check all five rows in the table above against those and report each as clean or not. Then,
+whatever the teardown left:
 
 - Remove `permissions.defaultMode: "auto"` from `~/.claude/settings.json` (row 5, always mine to
   fix). The `notify.js` Notification/Stop/SubagentStop hooks stay — they are yours and unrelated.
