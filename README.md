@@ -145,7 +145,7 @@ bash ~/dev/factory-lite/scripts/init.sh my-app && cd my-app && git init   # then
   it reads `CLAUDE_PROJECT_DIR` instead of the hook's `cwd`, so in a worktree it proves the
   main checkout. Install jq before relying on worktrees.
 - `marketplace.json` `source` must be `"./"`, not `"."`. Relative sources only resolve when the
-  marketplace is added via git (`/plugin marketplace add <owner>/factory`), not via a raw URL.
+  marketplace is added via git (`/plugin marketplace add <owner>/factory-lite`), not via a raw URL.
 - Path-scoped rules: quote every glob in `paths:` (YAML treats `*` and `{` as syntax) and check
   `/memory` to confirm the file loaded. Keep them in the project, not `~/.claude/rules`.
 - A hook that exits 1 does **not** block; only exit 2 does. `prove.sh` can exit anything non-zero;

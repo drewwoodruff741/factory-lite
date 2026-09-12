@@ -73,6 +73,16 @@ Hard constraints:
   matters downstream: v2's whole harness cost ~10.5k above the 32.3k floor, so v3 is judged
   against 10.5k — and Step 2's finding was that v2's damage was behavioural, not contextual, so a
   small /context number is necessary but never sufficient.
+- Step 3 is done, do not redo any of it: the scaffold is published at
+  github.com/drewwoodruff741/factory-lite (public), default branch `main`, tagged `v3.0.0`, both
+  `<your name>` blanks filled with "Drew", and `template/.claude/settings.json` already pins that
+  repo. `bash scripts/harness-smoke.sh` prints `harness smoke: PASS` and the plugin validates
+  clean. Two interface corrections from that step: `claude plugin validate .` here checks only the
+  *marketplace* manifest (root holds both, marketplace wins) — the plugin manifest and components
+  need `claude plugin validate .claude-plugin/plugin.json --strict`, `... validate skills --strict`
+  and `... validate agents --strict`; and `claude plugin details <name>` only works on an
+  *installed* plugin (its error message suggests `--plugin-dir`, which that subcommand does not
+  accept), so there is no pre-install token-cost read.
 - The scaffold lives at ~/dev/factory-lite (the repo root is both the plugin and its marketplace).
   Layout: .claude-plugin/{plugin,marketplace}.json · hooks/{hooks.json,stop-gate.sh} ·
   skills/{pre-alpha,verify,spec,harden}/SKILL.md · agents/{explorer,reviewer}.md ·
@@ -208,6 +218,9 @@ and `/context` for the scratch project is recorded next to v2's in LESSONS.md.
 
 **Guardrails:** anything that misbehaves is fixed in `~/dev/factory-lite`, re-smoke-tested,
 re-tagged. Never patched in the scratch project. Delete the scratch project after.
+"Re-validated" means all four calls from Step 3, not just `claude plugin validate .` — that one
+reads the marketplace manifest only. A re-tag means bumping `version` in `plugin.json` *and*
+`marketplace.json` (both say `3.0.0`) before the new tag, or the two disagree.
 
 **Interface note (verified in Step 1).** This step is already extension-only: `/hooks`, `/context`,
 `/factory-lite:spec`, `/clear`, `/factory-lite:harden` are all typed in the chat box, and the
@@ -215,7 +228,10 @@ symlink + `init.sh` parts are one-off terminal commands. **Do not use `claude --
 README lists it as an alternative but it launches the terminal UI. The symlink into
 `<scratch>/.claude/skills/factory-lite/` is the method. One extension-specific gotcha: a plugin
 loads at **session start**, so after creating the symlink, start a *new* session rather than
-continuing the open one, or `/hooks` will show nothing.
+continuing the open one, or `/hooks` will show nothing. Once the symlinked plugin *is* loaded,
+`claude plugin details factory-lite` becomes available as a print-and-exit cross-check on
+`/context`: it lists the component inventory and a projected token cost. Step 3 could not run it
+because nothing was installed yet.
 
 ---
 
