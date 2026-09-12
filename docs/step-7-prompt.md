@@ -153,17 +153,30 @@ three times in Step 4 and that was the result worth having.
 **The sub-guide is already written, reviewed and committed: `docs/subguides/step-7.md`.** Read it
 and execute it — do not rewrite it, and do not re-derive what §0 of it already checked. Three things
 were settled before it was written and are not open:
-- **Chore 1 is diagnosed.** One extension, `tjcg.auto-accept-claude-code` 0.5.0, writes all four
-  permission-disarm paths on every activation — which is why Step 1's hand fix came back. §1 executes
-  the teardown; pre-teardown backups of all six affected files are at
-  `~/backups/factory-lite-chore1-2026-09-12`. **§1b costs a VS Code extension-host restart, so it will
-  kill your session.** That is expected. Reopen and resume at §1c.
+- **Chore 1 is DONE — §1 is closed, do not re-run any of it.** The owner was one extension,
+  `tjcg.auto-accept-claude-code` 0.5.0, writing all four permission-disarm paths on every
+  activation, which is why Step 1's hand fix came back. It is now uninstalled from both the
+  WSL-side and Windows-side extension directories. Its own teardown cleaned three of four rows;
+  the machine-settings restore wrote `bypassPermissions` back from an activation-time snapshot,
+  exactly as §1a predicted, and that row plus `permissions.defaultMode: "auto"` were removed by
+  hand. Chores 2 and 3 went in the same pass. §1d confirmed it: `/hooks` lists three `notify.js`
+  hooks at User scope and no `PreToolUse`. Backups of both states are in
+  `~/backups/factory-lite-chore1-2026-09-12` (09:07 = pre-teardown, `*.PRE-1c.json` = pre-hand-edit).
+  See BACKLOG chores 1–3 and the two Step 7 entries in LESSONS.md.
 - **Two observations are pre-registered** so they cannot be scored to taste after the fact: §5c is an
   eight-row scorecard for BACKLOG item 2, and §8 is the gate-block tally. Read both *before* running
   the thing they measure.
 - **BACKLOG items 4 and 5 stay undecided, and item 6 stays unbuilt.** Item 6 is recorded on zero
   observations, as a prediction, precisely so it is not built on one.
 
-Start at §1. Tell me what you are about to do before the restart, then wait for my go.
+**Start at §3**, using the folder name `~/dev/coach` (settled at §2 — do not re-ask). §1 and §2
+are done. The session that did §1 could not run §3, because it started before the machine-settings
+edit and was therefore frozen in `bypassPermissions` for its whole life; you are the session that
+restart bought, so **§0.6 applies to you** — `init.sh`'s two `claude plugin install` calls should
+raise permission dialogs. That is the point of §1, not a malfunction. If they do not, stop and say
+so: it means something on this machine is still disarming permissions, and the first suspect is
+`vishalguptax.claude-manager` 2.8.1, which is installed and also manages Claude config.
+
+Then §4 is a hard checkpoint I have to type, and the run order from there is §5 → §6 → §7 → §8.
 
 ---
