@@ -131,6 +131,40 @@ not theoretical: `explorer` was defensible until the day the client shipped `Exp
 except the reverse pass would ever have noticed. A harness that stops growing still rots, just more
 quietly, and it rots by the world moving underneath it rather than by accretion.
 
+### The boundary with `~/dev/coach` — when FACTORY stops touching it
+
+**Answered 2026-09-12, because the question is better than the drift it corrects.** FACTORY-lite
+exists to be a framework other projects are built on. It does not exist to keep building projects.
+Those two things got blurred during the build, legitimately and then not, and the line is this:
+
+| | What coach was | Whether FACTORY may ask it for things |
+|---|---|---|
+| **Steps 7-8, construction** | the harness's **test subject**, built on purpose to generate evidence | yes — that was the whole point of building it |
+| **After close-out** | a **consumer** of a finished framework | **no** |
+
+**The rule, stated so it can be checked:** a finished framework must never need a project to change
+in order to prove the framework works. If FACTORY wants a project to restart a session, pick a
+permission mode, or run an experiment *for FACTORY's benefit*, the harness has started feeding on
+its consumer, which is the inversion of what a framework is for. Evidence from here is **observed,
+never requested**.
+
+**So the relationship from now on is passive.** The reopen triggers on items 5, 6 and 8 are
+**tripwires, not tasks** — nobody goes looking. If coach happens to be bitten by its data dirtying
+the gate's hash, or is found running against a damaged `SPEC.md`, or takes a work-in-progress push,
+you will notice in the course of coach's own work, and *then* FACTORY reopens. Until one of those
+trips, there is nothing for anyone to do here and coach owes FACTORY nothing.
+
+**Two standing asks were closed to make that true**, rather than left as quiet obligations:
+environment chore 4 above (closed unverified), and the expectation that someone confirm the gate's
+new PASS line in a real project. The second needs no action at all: the line prints at the first
+stop after a change in any session started since v3.3.0, so it will be observed the next time anyone
+opens coach for coach's own reasons. **Zero sightings as of 2026-09-12** — the coach session running
+that day was started before the plugin update and kept the gate it loaded at startup.
+
+**What coach still receives, and always will:** every push to `main`, the next time that project
+updates its plugins. That is the framework relationship and it is one-directional. Changes flow out;
+requests do not flow back.
+
 ### The close-out procedure
 
 Run this, and nothing else, on a Claude Code or model release that changes the built-in agents,
@@ -271,11 +305,14 @@ settings that change what the harness can be trusted to prove.
      plus an `additionalDirectories` entry for the same path.** The only permission dialog the
      entire project ever raised was the Superpowers document chain asking for somewhere to put
      itself — which is item 9, arriving from a direction nobody was watching.
-   **Status: open, and deliberately not a component.** What is unverified is narrow: whether the
-   six allow entries are ever *consulted*, which needs one session run in `default` mode. A match
-   leaves no record, so the only way to see it is to run in `default` and notice which commands do
-   **not** prompt. Worth doing on the next project's first session; not worth a project of its own,
-   and nothing in the harness changes either way.
+   **Status: CLOSED unverified, 2026-09-12, and the reason is the point.** What is unverified is
+   narrow — whether the six allow entries are ever *consulted*, which needs one session run in
+   `default` mode. Closing it rather than carrying it, because the only way to answer it is **to ask
+   a project to work differently so that the harness can watch itself**, and that is the wrong
+   direction for a framework (see "The boundary with `~/dev/coach`" below). Nothing in the harness
+   changes either way, no project has ever been harmed by the block's status, and a project that
+   ever does run in `default` will answer it for free. An honest unverified is worth more than a
+   standing request to a consumer.
 
 ## Items
 

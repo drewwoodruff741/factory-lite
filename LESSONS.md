@@ -782,3 +782,33 @@ size and the observer effect would have turned one data point into a retirement.
 when a component's retirement finally becomes measurable, the temptation is to act on the first
 measurement. Write down what the measurement cannot support, in the same breath as the
 measurement.**
+- **Close-out: a finished framework must never need a project to change in order to prove the
+  framework works.** The question that produced this was the owner's, not the harness's: *"we keep
+  trying to make improvements here for that project, but this is the factory project."* It was
+  correct, and the drift it names is easy to miss because each individual step looked reasonable —
+  update coach's plugin, run one coach session in `default` mode to see whether the allowlist is
+  consulted, restart a coach session so the gate's new PASS line can be witnessed. Every one of
+  those asks a **consumer** to work differently so the **framework** can watch itself, which is the
+  inversion of what a framework is for.
+  The distinction that resolves it is temporal, not moral. During Steps 7-8, coach was the harness's
+  **test subject**, built on purpose to generate evidence, and asking it for things was the entire
+  point. The moment the harness was finished, coach became a **consumer**, and the same request
+  changed character without anyone noticing it had. *Evidence from a finished framework is observed,
+  never requested.* The reopen triggers became tripwires rather than tasks: nobody goes looking, and
+  if coach is ever bitten, that will surface in the course of coach's own work.
+  Two standing asks were closed rather than left as quiet obligations — an environment chore was
+  marked **closed unverified**, with the reason recorded, because an honest unverified is worth more
+  than a permanent request pointed at a project that owes the harness nothing.
+- **Close-out: the fix for "you cannot tell whether the gate is working" is itself subject to "you
+  cannot tell whether the update applied."** v3.3.0 made a passing gate announce itself, precisely so
+  that silence after real work would mean *absent*. Coach updated to it and shipped a whole backlog
+  item — and its transcripts carry **zero** PASS firings. The string appears 28 times and every one
+  is prose, us and that session discussing the feature; real firings land as `attachment` records
+  with `hookName: "Stop"`, and 13 such records exist for the *old* dormant announcements, so the
+  zero is a measurement rather than a gap in the record. The cause is mundane: the session was
+  already running when the plugin updated, and the CLI's own "Restart to apply changes" is the whole
+  story. The lesson is the shape, one layer up from the original: **a diagnostic that reports on a
+  component can only report once it is loaded, so its silence still has two readings — "not working"
+  and "not yet running the version that would have told you".** Instrumentation moves the ambiguity;
+  it does not abolish it. Worth knowing before trusting any first-sighting-of-a-new-signal as
+  evidence about the signal.
