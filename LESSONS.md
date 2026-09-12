@@ -464,15 +464,23 @@ depend on.
 - **Step 7: how to count hook firings in a `.jsonl` transcript, because three separate ways of
   getting it wrong all showed up in one sitting.** The §8 gate tally is a ratio, so every counting
   error lands directly on a delete-when decision. The rule, in this order:
-  1. **A firing is a record with `type == "attachment"`.** Mentions inside `type == "user"` or
-     `type == "assistant"` records are the gate being *discussed*, not the gate running. This
-     clause matters most in the `factory-lite` transcripts — which is both where the gate gets
-     discussed and where the sessions 2-3 tally has to be read from. One session matched the block
+  1. **The record type depends on how the gate exited, and the two cases do not match.** A
+     `dormant` announcement or a 3-strike release prints a `systemMessage` JSON object on stdout
+     and exits 0, and lands as **`type == "attachment"`**. A **block** writes to stderr and exits
+     2, and lands as **`type == "system"`**. A rule written for one silently reports zero of the
+     other — which is what happened here: a first version of this rule filtered to
+     `attachment.stdout`, and counted the project's only real block as 0.
+  2. **Then de-duplicate, differently for each.** An `attachment` firing is written **twice**, as
+     `.attachment.stdout` and `.attachment.content`, identical text, same timestamp to the
+     millisecond — filter to one key or count distinct timestamps (the coach run's raw count of 8
+     dormant announcements is **4** firings). A `system` block is written **once**; the `user` and
+     `assistant` records carrying the same text afterwards are the session quoting it back.
+  3. **Prose is never a firing.** Mentions inside `user`/`assistant` records are the gate being
+     *discussed*. This matters most in the `factory-lite` transcripts, which is both where the gate
+     gets discussed and where a tally is likely to be read from: one session matched the block
      string **13 times across 9 prose records with zero firings**.
-  2. **Then de-duplicate.** Each firing is written **twice**, as `.attachment.stdout` and
-     `.attachment.content`, with identical text and the same timestamp to the millisecond. Filter
-     to `stdout`, or count distinct timestamps. The coach run's raw count of 8 dormant
-     announcements is **4** firings.
+  That this rule was wrong on its first writing, in the direction of under-counting the only
+  outcome anyone cares about, is the lesson — not a footnote to it.
   And underneath both: **one counting method per comparison.** `grep -c` counts *lines*, `grep -o |
   wc -l` counts *occurrences*, and in `.jsonl` a single line carries an entire message — including
   a whole skill body — so mixing the two manufactures order-of-magnitude contrast out of identical
@@ -516,3 +524,38 @@ depend on.
   traceable cause. Promoted to `SPEC.md` and `CLAUDE.md` Gotchas before the delete. The general
   form: *a document being in the wrong place is not evidence that everything in it is worthless;
   grep it for the things the rest of the system depends on before it goes.*
+- **Step 7, §8 — the gate's delete-when measures session shape, not model reliability.** First real
+  project, final tally:
+
+  ```
+  ran and passed:    unknown but >= 1  (a pass is silent; see BACKLOG item 7)
+  ran and blocked:   1                 (deliberately induced, see below)
+  3-strike releases: 0
+  ran DORMANT:       6                 (session 1, all before the sentinel came out)
+  ```
+
+  **The whole walking skeleton was built without the gate firing once.** The build happened in a
+  single continuous agentic run, and the gate only runs at a *stop*; by the time the session
+  stopped, `prove.sh` was already green. Read naively that is a 0% block rate — a perfect score,
+  and an argument to retire the gate. It is the opposite: the gate scored perfectly because it was
+  barely consulted. **The denominator is stops, and long agentic runs have almost none.** Combined
+  with the fact that writing the check first (which FACTORY mandates) guarantees the check is red
+  for most of a build, the ">95% of stops" condition cannot be read off a pre-alpha at all. Whatever
+  replaces it has to be measured over something that does not collapse when the model works in
+  longer turns.
+- **Step 7: the gate had to be provoked to be tested, and the provocation was worth more than the
+  build.** Because the real build never tripped it, the block was induced deliberately — the
+  `reviewer` agent's mutation, one character in a pure function (`targets[m] - totals[m]` to `+`),
+  then stop without fixing it. The gate ran `./prove.sh`, refused the stop, and named the failing
+  assertion: `AssertionError: missing '1745'`. Three things that only a real defect could show.
+  It caught a **one-character change in a domain function with no test suite in the project at
+  all**. It pointed at the exact assertion rather than a generic failure. And the assertion that
+  caught it was a **remainder**, not a total — with one entry the row and the total render the same
+  string, so a check asserting totals alone would have passed a visibly broken page. *When a check
+  has only one fixture, assert on a number that could only be produced by the computation you care
+  about, not one that any intermediate value also produces.* Reverted immediately; tree clean, no
+  check touched in either direction.
+  The general form, and the reason this is in LESSONS rather than a commit message: **a gate that
+  never fires is indistinguishable from an absent one, and a project cannot tell the difference
+  from the inside.** That is BACKLOG item 4 arriving as evidence rather than as a hypothetical, on
+  a real project, one step after it was written down.

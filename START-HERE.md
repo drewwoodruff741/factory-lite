@@ -340,7 +340,18 @@ exists. Don't bump the version in this step unless something actually breaks.
 
 ---
 
-## [ ] Step 7: First real project, pre-alpha only (the part that used to fail)
+## [x] Step 7: First real project, pre-alpha only (the part that used to fail) — done 2026-09-12
+
+> **Done 2026-09-12.** `~/dev/coach` — a nutrition and measurement tracker — ships its walking
+> skeleton at `f01b744`: define a food, log it to an explicit date, see that day's totals against
+> editable targets. `./prove.sh` passes end to end and is load-bearing (a one-character mutation in
+> a pure function makes it fail by name). The gate was armed, then **deliberately provoked** to get
+> the block this step required, because the real build never tripped it. Two decisions the step
+> forced: the `superpowers` chain's 303-line design doc and 1608-line plan were **deleted** —
+> `SPEC.md` is the only planning artifact — after promoting the one decision that lived only inside
+> them; and the plan's ordering, which put `prove.sh` at task 9 of 9, was **rejected** and rewritten
+> to put it first. BACKLOG item 2 did not fire and is now argued against; items 4, 5 and 6 stay
+> undecided; item 7 is new. The findings are in `LESSONS.md`.
 
 **Goal:** something runs end to end, proven by `./prove.sh`, before any architecture exists.
 

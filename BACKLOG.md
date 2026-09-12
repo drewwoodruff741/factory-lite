@@ -267,6 +267,16 @@ settings that change what the harness can be trusted to prove.
   before any code is written, and makes it a human-typed check rather than an inferred one. If it
   fails there — in a real project, not a scratch folder — that is the second instance this item
   needs, and it gets an evidence line, not a decision.
+  **Step 7 evidence line (2026-09-12), status deliberately unchanged.** §4's checkpoint *passed* —
+  `/hooks` showed `Stop` carrying both hooks — so this item gets no instance from there. It got one
+  from somewhere nobody was looking: **the gate then sat armed through the entire build without
+  firing once**, because the skeleton was written in a single continuous run and the gate only runs
+  at a stop. For the whole of stage 1 a correctly-installed, correctly-armed gate and a missing one
+  would have produced **identical** evidence from inside the project — no message, no block, no
+  trace. It took a deliberately induced defect to show the gate was live at all. That widens this
+  item: the wish was "make a *missing* gate loud", and the real requirement is closer to "a project
+  should be able to tell the gate is **working**", which a missing install and a never-triggered
+  install both fail. Still no candidate chosen, still `waiting`.
 
 ### 5. `main` is production, and nothing marks the difference
 - **Wish:** some separation between "pushed" and "released" — a `release` branch, a pinned `ref` in
@@ -330,16 +340,26 @@ settings that change what the harness can be trusted to prove.
      two cases §8 must tell apart — *ran and passed* versus *skipped, nothing changed* — are
      indistinguishable from outside. Only blocks (exit 2, stderr), `dormant`, and the 3-strike
      release emit anything at all.
-  2. **Blocks double-count.** Every hook firing is written to the transcript **twice**, as
-     `.attachment.stdout` and `.attachment.content`, same text, same timestamp to the millisecond.
-     A naive count of the coach run's dormant announcements gave 8; the real figure is **4**
-     (17:26:02, 17:28:02, 17:34:06, 17:37:05).
+  2. **The two outcomes record in different shapes, and the obvious rule catches only one.** A
+     `dormant`/3-strike firing prints `systemMessage` on stdout, exits 0, and lands as
+     `type == "attachment"` **written twice** (`.stdout` and `.content`, same text, same timestamp
+     to the millisecond) — a naive count of the coach run's dormant announcements gave 8 against a
+     real 4. A **block** writes stderr and exits 2, and lands as `type == "system"` **written
+     once**. The first counting rule written for this filtered to `attachment.stdout` and therefore
+     reported the project's only real block as **zero**.
   3. **Prose counts as firings.** In the factory-lite transcripts the gate is *discussed*, and
      those mentions match the same strings. One session matched the block string 13 times across 9
      user/assistant records with **zero** actual firings. This matters most precisely where the
      sessions 2-3 tally will be read from.
   Errors 1 and 2 push the measured ratio in **opposite** directions, and neither is visible unless
   you go looking. The counting rule that survives all three is in `LESSONS.md`.
+  **A fourth failure, found at close-out, is worse than the three above because it needs no
+  mistake.** Step 7's whole walking skeleton was built in one continuous agentic run, and the gate
+  only runs at a *stop*. It never fired. The tally reads **0 blocks out of ~1 stop** — a flawless
+  score that argues for retirement, produced by a gate that was never consulted. So the delete-when
+  does not merely lack a numerator: **its denominator collapses as the model works in longer
+  turns**, and the metric drifts toward "delete" precisely as sessions get more autonomous. Any
+  replacement has to count something that does not shrink with turn length.
 - **Delete when:** n/a until something is chosen.
 - **Status:** waiting, on one project's observation, and deliberately **not** decided in Step 7 —
   the step's guardrail forbids changing the harness mid-project, and every candidate above is a
