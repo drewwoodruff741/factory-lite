@@ -61,8 +61,10 @@ settings that change what the harness can be trusted to prove.
   `AskUserQuestion` with real scope pushback and wrote a SPEC.md with 9 checkable requirements, a
   9-item out-of-scope list, and a byte-for-byte fixture diff as "Proven by" — better than anything
   `spec` has produced. `/factory-lite:spec` then ran, found nothing to do, and said so. It also
-  never wrote its own competing `docs/superpowers/specs/` design doc, and never reached
-  `writing-plans`.
+  never wrote its own competing `docs/superpowers/specs/` design doc. **Caveat that Step 7 must
+  close:** it was stopped by the human right after the CLAUDE.md edit, with its own steps 7-9
+  (including `invoke writing-plans`) still ahead of it — so we do **not** yet know whether it
+  would have handed off to a competing plan document. Let it run to its own end before acting.
 - **Delete when:** n/a — this *is* a deletion. **Trigger to act:** if brainstorming again writes a
   correct `SPEC.md` unprompted in Step 7's first real project, delete `spec` in that release. One
   observation is not enough; deletions get the same evidence bar as additions.

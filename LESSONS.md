@@ -107,10 +107,17 @@ skills are model-invocable, and each is also reachable as `/superpowers:<skill>`
   design doc to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`, commit, then invoke
   `writing-plans`*. **It did neither.** No `docs/` directory was created. It wrote **FACTORY's
   `SPEC.md`** instead, in the template's own sections, `Phase: pre-alpha`, `## Deferred` left empty,
-  and updated CLAUDE.md's Run/prove lines — then stopped without reaching `writing-plans`. README §3's
-  division of labour held exactly as written: **Superpowers supplied the method, FACTORY supplied the
-  artifact.** The template being present in front of it is what steered it, which is the condition in
-  every FACTORY project.
+  and updated CLAUDE.md's Run/prove lines *and* its title. README §3's division of labour held
+  exactly as written: **Superpowers supplied the method, FACTORY supplied the artifact.** The
+  template being present in front of it is what steered it, which is the condition in every FACTORY
+  project.
+  **Precision about what was and was not proved.** It never created `docs/` — that much is
+  observed, and it is its own checklist step 6, replaced by SPEC.md. But it **did not stop of its
+  own accord**: the human typed `stop` immediately after the CLAUDE.md edit, with its steps 7–9
+  (spec self-review → user reviews the spec → invoke `writing-plans`) still ahead of it. So
+  "it never reached `writing-plans`" is **not** established — only that it had not reached it yet.
+  Step 7 must let brainstorming run to its own end to settle this, because the answer decides
+  whether FACTORY's phase ritual has a competitor.
 - **`verify` item 2 ("show evidence, don't assert") is now strictly dominated** by
   `verification-before-completion`, which does the same job across two tables of rationalizations.
   Trim candidate, not a deletion — items 1, 3 and 4 (`prove.sh` as the phase's definition of done,
@@ -146,6 +153,21 @@ skills are model-invocable, and each is also reachable as `/superpowers:<skill>`
   gate's own `FACTORY gate: dormant` message was printing at the end of that very turn, and `/hooks`
   showed it `Plugin`-sourced. **Client commands must be typed by the human.** Same class as Step 4's
   trust finding: a capability inferred absent from disk state while live evidence says otherwise.
+- **`claude plugin list` is cwd-sensitive, and says "disabled" from the wrong folder.** The same
+  project-scope install read `superpowers@claude-plugins-official … Status: ✘ disabled` from
+  `~/dev/factory-lite` and `✔ enabled` from `~/dev/scratch-super` — where it also listed the
+  `factory-lite@skills-dir` entry that is invisible elsewhere. A project-scope plugin is enabled by
+  the *project's* `.claude/settings.json`, so the CLI answers for whatever directory it is standing
+  in. Always set cwd to the project under test before reading it, and never conclude an install
+  failed from a "disabled" printed somewhere else. Third member of the family that includes Step
+  4's CLI-vs-extension trust records and the wrong-window `Unknown command`.
+- **What the post-install verification actually rested on.** The `/plugin` panel was **not** read
+  after installing; the evidence for "both plugins loaded, factory-lite once" was `claude plugin
+  list` run with cwd in the project, the `Plugin`-sourced `SessionStart` row in `/hooks`, and the
+  +0.8k jump in the `/context` skills bucket. Three independent signals, but not the one the step's
+  done-when named — recorded so the next reader does not treat it as a `/plugin` observation.
+- **The Customize → Plugins UI does offer an install scope**, and writing `enabledPlugins` to the
+  project's `.claude/settings.json` is what "project" means there. No CLI fallback was needed.
 - **A third permissions-disarm mechanism found, at a new path.** `~/.claude/settings.local.json`
   carries `defaultMode: bypassPermissions` *and* its own copy of the `_autoAcceptManaged` PreToolUse
   hook. LESSONS previously recorded two (user `settings.json` `defaultMode: auto` + the hook); Step 1

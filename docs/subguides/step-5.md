@@ -382,9 +382,11 @@ Kept rather than silently edited, because the errors are the useful part.
   (custom agents + memory files + skills + messages at turn zero) and ignore the total.
 - **§7 predicted the wrong collision.** It expected `brainstorming` to write and commit
   `docs/superpowers/specs/<date>-<topic>-design.md` and hand off to `writing-plans`. It did
-  neither — it wrote FACTORY's own `SPEC.md`, filled CLAUDE.md's Run/prove lines *and* its title,
-  and stopped. The collision is the opposite shape: Superpowers doesn't compete with the artifact,
-  it **outperforms the skill that writes it**.
+  neither — it wrote FACTORY's own `SPEC.md` and filled CLAUDE.md's Run/prove lines *and* its
+  title. The collision is the opposite shape: Superpowers doesn't compete with the artifact, it
+  **outperforms the skill that writes it**. Caveat the guide should have forced: it was **stopped
+  by the human** right after the CLAUDE.md edit, with its steps 7-9 still ahead, so "it never
+  reached `writing-plans`" is unproven. A hand-off test has to let the first tool finish.
 - **§7 was wrong that there is no slash command.** No `commands/` directory does not mean no slash
   command: `/superpowers:brainstorming` autocompletes and runs. Every skill in a plugin is
   reachable that way.
@@ -393,6 +395,11 @@ Kept rather than silently edited, because the errors are the useful part.
   inferring — which here concluded the Stop gate "is not loaded" while the gate's own message was
   printing in that same turn. **Say: the human types client commands.**
 - **§1 omitted a `mkdir`** (corrected in place above).
+- **§5's `/plugin` row was never actually satisfied.** The post-install evidence came from
+  `claude plugin list` (with cwd in the project — it reads `✘ disabled` from anywhere else), the
+  `Plugin`-sourced `SessionStart` row in `/hooks`, and the +0.8k skills bucket. Three signals, but
+  not the one the done-when named. A checklist item is met by the observation it names, or it is
+  met by something else and the guide should say which.
 - **What the guide got right and is worth keeping:** insisting on a fresh session for the
   measurement (the first reading came from a session with 15.3k of messages in it and was
   worthless); reading the Superpowers skills rather than their names before judging duplication;
