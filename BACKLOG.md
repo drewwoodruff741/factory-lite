@@ -17,6 +17,12 @@ and 5 each found a piece that a shortened version of this rule leaves out.
 4. `git commit`, `git tag vX.Y.Z`, `git push && git push --tags`.
 5. Projects update via **Customize -> Plugins**, or `claude plugin update factory-lite@factory`.
 
+**What counts as a change:** anything a project receives as behaviour — plugin components
+(`hooks/`, `skills/`, `agents/`, the manifests), `template/`, or `scripts/`. Prose-only edits to
+`README.md`, `LESSONS.md`, `BACKLOG.md`, `START-HERE.md` or `docs/` still run steps 1, 2 and 4
+before committing, but skip the version bump: bumping for a typo makes the version number stop
+meaning anything, and the version number is the only thing every diagnostic reports.
+
 **What the tag actually does: nothing.** Step 6 established by observation that an installing
 project gets **`main`**, not the newest tag. `~/.claude/plugins/marketplaces/factory` is a
 *shallow, depth-1 clone of the default branch* — `git describe --tags` there fails with "No names
@@ -135,3 +141,38 @@ settings that change what the harness can be trusted to prove.
 - **Delete when:** n/a — a trim, not a component.
 - **Status:** waiting (do it in the same release as item 2, if item 2's trigger fires — one edit to
   the skill, one bump, not two)
+
+### 4. A project cannot tell whether the harness actually loaded
+- **Wish:** something should make a missing Stop gate *loud*. Candidates, none chosen: `init.sh`
+  verifying the install record after it writes it; `prove.sh` refusing to report PASS if it wasn't
+  invoked by the gate; a line in `CLAUDE.md` telling the session to check `/hooks` on day one.
+- **Assumption it encodes:** that a harness which silently isn't there is worse than no harness,
+  because the project proceeds believing it is protected.
+- **Evidence:** Step 6. A fresh project with the pin in `settings.json` got the marketplace
+  registered, the repo cloned, the plugin cached and an in-use marker written — and no install
+  record. From inside the session the only symptom was an **absence**: four hooks in `/hooks`
+  instead of five. Nothing errored, nothing warned, and a second fresh session behaved identically.
+  A real project could have run its entire pre-alpha with no proof gate and never known. `init.sh`
+  now installs loudly, which closes *this* instance, but not the class: any future breakage of the
+  load path fails the same silent way.
+- **Delete when:** n/a until something is chosen.
+- **Status:** waiting. **Noted in Step 6, deliberately not decided there** — Step 6's guardrail was
+  to add no hook, agent or rule, and every candidate above is a change to the harness's behaviour
+  that wants a real project's evidence first. Revisit after Step 7, which is the first time the
+  answer matters to something other than a scratch folder.
+
+### 5. `main` is production, and nothing marks the difference
+- **Wish:** some separation between "pushed" and "released" — a `release` branch, a pinned `ref` in
+  the marketplace source, or a second marketplace entry. Explicitly **not** chosen yet.
+- **Assumption it encodes:** that the harness will eventually need a place to land work in progress
+  that isn't instantly live in every project.
+- **Evidence:** Step 6 established that an installing project gets `main` via a shallow depth-1
+  clone that never fetches tags. Every push ships, immediately, to every project. Today that is
+  harmless — the only consumers are scratch folders. From Step 7 onward there is a real project
+  downstream of every commit, and the release rule's `git tag` step protects nothing.
+- **Delete when:** n/a until something is chosen.
+- **Status:** waiting. **Noted in Step 6, deliberately not decided there** — the step's guardrail
+  was "don't set up stable/latest channels yet; one tag is enough until a second project exists",
+  and that reasoning still holds. The interim discipline is a habit, not a mechanism: don't push
+  work in progress to `main`. Recorded so that when the habit fails, the failure is expected rather
+  than surprising.
