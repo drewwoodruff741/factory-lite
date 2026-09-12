@@ -430,3 +430,19 @@ depend on.
 - **Step 4:** `claude <unrecognized-subcommand>` is **treated as a prompt**, not rejected —
   `claude config list` (no such subcommand in 2.1.269) started a headless session and answered the
   words as a question. Only verified subcommands print and exit. Do not guess at them.
+- **Step 7:** the machine-wide auto-accept that Steps 1, 4 and 5 each re-diagnosed as a *new*
+  mechanism was **one VS Code extension** (`tjcg.auto-accept-claude-code` v0.5.0) writing four
+  separate permission paths on every activation. Step 1 fixed the machine settings by hand and the
+  extension put them back at the next window start; Step 4 found the `PreToolUse` hook and called
+  it a second mechanism; Step 5 found `settings.local.json` and called it a third. They were one
+  thing seen three times. **The finding is the owner, not the files** — while the owner is enabled,
+  editing any file it writes is wasted work, and the growing count of "mechanisms" is itself the
+  tell that you are fixing outputs instead of the source. The general form: *before hand-fixing a
+  config file that came back, find out what writes it.*
+- **Step 7:** an uninstall teardown is not a fix, it is a claim to verify. This extension shipped a
+  real one — it deleted its hook script, filtered its `_autoAcceptManaged` entries out of both
+  settings files, and restored the two VS Code keys — and three of four rows came back clean. The
+  fourth restored from a snapshot taken at *activation* time, when the bad value was already
+  present, so the teardown faithfully wrote `bypassPermissions` back. **A restore is only as good
+  as the state it snapshotted.** Snapshot before the teardown and diff after; the row that survives
+  is the one nobody predicted, unless you predicted it.

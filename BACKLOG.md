@@ -104,16 +104,28 @@ settings that change what the harness can be trusted to prove.
    `docs/subguides/step-7.md` §1. **Deadline: before Step 7**, the first real project — harness work
    is cheap to get wrong, a real project is not. Until it is done, the template's permissions block
    is inert and no permission rule on this machine is testable.
-   **Status: diagnosed, not yet executed** — §1 runs at the top of Step 7, and it costs a VS Code
-   extension-host restart, so it kills whatever session asks for it.
+   **Status: done 2026-09-12.** Executed at the top of Step 7. The extension is **uninstalled**,
+   not merely disabled — gone from `~/.vscode-server/extensions/` and from the Windows-side
+   `.vscode/extensions/` — and its teardown ran: the hook script is deleted, `settings.local.json`
+   is back to `{}`, and the `PreToolUse` block and both `_autoAcceptManaged` markers are gone from
+   `~/.claude/settings.json`. **The distrust of the teardown was warranted on exactly the predicted
+   row:** the machine-settings restore wrote `initialPermissionMode: bypassPermissions` and
+   `allowDangerouslySkipPermissions: true` straight back from its activation-time snapshot. Those
+   two keys and `permissions.defaultMode: "auto"` were removed by hand; `files.eol` and the three
+   `notify.js` hooks were left alone. Pre-edit snapshots of both states (09:07 teardown-time, and
+   `*.PRE-1c.json` hand-edit-time) are in `~/backups/factory-lite-chore1-2026-09-12/`.
+   Remaining confirmation: the §1d `/hooks` check, which needs a session started *after* the
+   machine-settings edit.
 
-2. **Delete `~/dev/.claude/settings.local.json`.** Stale leftover from Step 0, when `~/dev` was
+2. **Delete `~/dev/.claude/settings.local.json`.** **Status: done 2026-09-12** (the directory is
+   now empty). Stale leftover from Step 0, when `~/dev` was
    briefly its own project: it references a Desktop zip and a `~/dev/.git` that no longer exists.
    Whether a parent directory's local settings reach a child project is unverified (see chore 1 —
    it cannot be tested while auto-accept is on), and the file can only ever *grant*, so deleting
    is strictly safer either way.
-3. **Prune `~/dev/factory-lite/.claude/settings.local.json`.** (Chores 2 and 3 are done in the
-   same pass as chore 1 — see `docs/subguides/step-7.md` §1c.) Two entries this build wrote and
+3. **Prune `~/dev/factory-lite/.claude/settings.local.json`.** **Status: done 2026-09-12**, allow
+   list 35 -> 33. (Chores 2 and 3 were done in the same pass as chore 1 — see
+   `docs/subguides/step-7.md` §1c.) Two entries this build wrote and
    nothing needs: `Bash(rm -rf /home/drew/dev/scratch-hello *)`, pointing at a project that no
    longer exists, and `Bash(claude config *)`, granted for a call that turned out not to be a
    subcommand at all.
