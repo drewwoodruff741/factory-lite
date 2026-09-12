@@ -599,3 +599,32 @@ depend on.
   7 open is a defensible call — it wants a second project's evidence — but the cost is no longer
   hypothetical: *a component that cannot report success cannot be verified by the same evidence that
   would verify anything else, and every check of it degrades into asking a person.*
+- **Step 8: a `prove.sh` gate protects against regression, not against introduction.** The best
+  sentence the build produced, and it came from the session being gated. Hardening coach through
+  three backlog items gave the gate its first real sample — **0 blocks across 7 stops, with `/hooks`
+  confirming it was armed the whole time**, so the zero is a measurement and not an artifact. In
+  those same stops the `reviewer` agent found a P0 (`food_id=10**30` returning a 500 with a
+  traceback — *the exact defect the shipped item existed to prevent*), a P1 (`servings=1e308` making
+  a day's totals read `inf` permanently), three tests that could not fail under any circumstances,
+  and three whole sections deleted from `SPEC.md`, `## Constraints` among them. **`./prove.sh` was
+  green through all of it**, and correctly so: at the moment a defect is written, the check that
+  would catch it is part of the same unwritten work. Every one of those findings was then *converted*
+  into a check the gate now enforces. So the honest delete-when is not "does it pass >95%" but
+  **"does anything else run `prove.sh` if the gate doesn't?"**
+- **Step 8: a test you have not watched fail is not a test.** Three of the suite's tests could not
+  fail under any input, and the suite passed them happily — they were written by the same session
+  that wrote the code, and nothing about a green run distinguishes a passing test from an inert one.
+  The `reviewer` agent caught all three. The `harden` skill already says each new strict check must
+  be shown to fail on a broken input; Step 8 is the evidence for why that clause is load-bearing
+  rather than ceremonial, and coach's `CLAUDE.md` now carries the rule because the session broke it
+  three times. Generalise past tests: *any assertion, check, gate or alarm you have not seen fire is
+  a decoration until you have.*
+- **Step 8: where FACTORY's value actually sits, on the evidence so far.** Two projects in, the
+  component that has produced findings you can point at is the **`reviewer` agent**, followed by the
+  **check-written-first rule** and the **phase discipline**. The always-on **Stop gate** has blocked
+  exactly twice in the entire build, and both were defects induced deliberately to see whether it
+  would. That is not a case for deleting it — deterrence and absence remain indistinguishable on
+  this metric, and the sessions ran `prove.sh` by hand precisely because the gate exists. But if the
+  harness is ever trimmed, the evidence says trim toward *keeping the cheap fresh-context review*
+  and re-examining the always-on hook, which is the reverse of the intuition that a hook is rigorous
+  and an agent is soft.

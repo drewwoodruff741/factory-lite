@@ -451,3 +451,28 @@ settings that change what the harness can be trusted to prove.
   main reason to collect the number, so a gate that cannot report it is a gate that cannot be
   retired on evidence. That is an argument for fixing the measurement, **not** an argument that the
   gate has earned permanence.
+
+### 8. Nothing guards `SPEC.md`, which is what everything else is measured against
+
+- **Wish:** something should notice when `SPEC.md` loses content. Candidates, **none chosen**: the
+  `template/prove.sh` lite section asserting the standard headings are present; a line in
+  `template/CLAUDE.md`; or **nothing at all**, because the project can add the check itself the
+  moment it needs one — which is what actually happened.
+- **Assumption it encodes:** that every other component defers to `SPEC.md` — the gate proves what
+  it names, `pre-alpha` and `harden` read its `Phase:`, the `reviewer` grades against its
+  requirements — so damage to it degrades all of them silently, and it is the one file with no
+  check of its own.
+- **Evidence:** Step 8, hardening `~/dev/coach`. A scripted edit deleted **three whole sections**
+  of `SPEC.md`, `## Constraints` among them. `./prove.sh` was green before and after; the gate has
+  no opinion about the spec, and the loss was caught by the `reviewer` agent rather than by any
+  check. Note what was lost: `## Constraints` is where "personal data never enters git" lives, and
+  it is upstream of a check the same session had just written.
+- **Counter-argument, and it is strong:** coach fixed this unaided, adding a seven-heading assertion
+  to its own `prove.sh` in the same session, with no harness involvement wanted or missed. That is
+  **item 6's shape exactly** — a problem a project meets and solves locally — and item 6's evidence
+  now argues the harness should stay out of it. One project is not two.
+- **Delete when:** n/a until something is chosen.
+- **Status:** waiting, on one project's observation. Recorded rather than built, per the standing
+  rule that a component enters FACTORY only with evidence from a shipped project — and this one has
+  a live counter-argument from the item directly above it. Revisit if a second project loses spec
+  content, or if one is found to have been running against a damaged `SPEC.md` without noticing.

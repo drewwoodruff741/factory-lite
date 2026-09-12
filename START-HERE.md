@@ -404,7 +404,18 @@ ships. A real project is where that stops being theoretical.
 
 ---
 
-## [ ] Step 8: Harden the first project (deliberate engineering starts here)
+## [x] Step 8: Harden the first project (deliberate engineering starts here) — done 2026-09-12
+
+> **Done 2026-09-12.** `~/dev/coach` is `Phase: hardening` with `PROFILE=strict`. Three backlog
+> items shipped through the rhythm — invalid input, delete an entry, log a measurement — each on its
+> own branch, each reviewed, `./prove.sh` never weakened and five checks richer: `pytest -q` (118
+> tests), `ruff check`, `ruff format --check`, no `.db` tracked in git, and `SPEC.md` keeps its seven
+> headings. **Every one was watched failing on a deliberately broken input before it was trusted.**
+> A type checker is deferred with "none installed" as the reason rather than faked.
+> **Gate tally: 0 blocks across 7 stops, gate confirmed armed.** The finding is not the ratio but
+> that the requested number — "stops where the gate RAN and passed" — *cannot be produced even by
+> counting live*, since a pass and an unchanged-tree skip are both a silent exit 0. BACKLOG item 7's
+> cheapest candidate is falsified and gets struck at Step 9. Items 4–7 all stay `waiting`.
 
 **Goal:** turn the Deferred list into an evidence-ranked backlog and start building from it, one
 item at a time.
