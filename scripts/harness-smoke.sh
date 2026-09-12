@@ -32,15 +32,23 @@ rc=0
 printf '{"cwd":"%s","session_id":"smoke1b","stop_hook_active":false}' "$proj" | bash "$gate" 2>/dev/null || rc=$?
 [ "$rc" -eq 2 ] || fail "expected exit 2 for a failing prove.sh, got $rc"
 
-# 2. Passing prove.sh -> gate exits 0
+# 2. Passing prove.sh -> gate exits 0 and SAYS the check passed.
+#    The message is the only thing that distinguishes "ran and passed" from "not wired at all"
+#    from outside the gate (BACKLOG item 7, Steps 7-8). Silence used to mean both.
 printf '#!/usr/bin/env bash\nexit 0\n' > "$proj/prove.sh"; chmod +x "$proj/prove.sh"
-printf '{"cwd":"%s","session_id":"smoke2","stop_hook_active":false}' "$proj" | bash "$gate" || fail "gate blocked a passing prove.sh"
+out="$(printf '{"cwd":"%s","session_id":"smoke2","stop_hook_active":false}' "$proj" | bash "$gate")" \
+  || fail "gate blocked a passing prove.sh"
+printf '%s' "$out" | grep -q 'prove.sh passed' || fail "a passing gate must announce itself"
 
 # 3. Unchanged tree after a pass -> gate does not re-run prove.sh (chat-only turns stay cheap)
+#    and stays SILENT, so the announcement in 2 means "it ran", not merely "it is installed".
 runs="$tmp/runs"; : > "$runs"
 printf '#!/usr/bin/env bash\necho run >> %s\nexit 0\n' "$runs" > "$proj/prove.sh"
-printf '{"cwd":"%s","session_id":"smoke3","stop_hook_active":false}' "$proj" | bash "$gate" || fail "pass run failed"
-printf '{"cwd":"%s","session_id":"smoke3","stop_hook_active":false}' "$proj" | bash "$gate" || fail "second run failed"
+printf '{"cwd":"%s","session_id":"smoke3","stop_hook_active":false}' "$proj" | bash "$gate" >/dev/null \
+  || fail "pass run failed"   # priming run: swallow the PASS announcement, it is asserted in 2
+out="$(printf '{"cwd":"%s","session_id":"smoke3","stop_hook_active":false}' "$proj" | bash "$gate")" \
+  || fail "second run failed"
+[ -z "$out" ] || fail "the unchanged-tree skip must stay silent, got: $out"
 [ "$(wc -l < "$runs")" -eq 1 ] || fail "gate re-ran prove.sh on an unchanged tree ($(wc -l < "$runs") runs)"
 
 # 4. No prove.sh -> no gate (exit 0)

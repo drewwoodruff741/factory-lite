@@ -628,3 +628,73 @@ depend on.
   harness is ever trimmed, the evidence says trim toward *keeping the cheap fresh-context review*
   and re-examining the always-on hook, which is the reverse of the intuition that a hook is rigorous
   and an agent is soft.
+- **Step 9: a component survived two reviews because every duplication check compared it against the
+  other *plugin*, and never against the *client*.** The `explorer` agent — read-only research on
+  haiku, ~70 tokens always-on — was dispatched **zero** times across two shipped projects and four
+  scratch folders. The only subagent ever dispatched in any FACTORY session is `reviewer`, 7 times.
+  Step 5 ran an explicit duplication pass against Superpowers and correctly concluded that
+  `dispatching-parallel-agents` is an orchestration pattern rather than a research agent — and it
+  was the wrong comparison, because Claude Code itself now ships `Explore` and `general-purpose`,
+  which are always present and need no plugin. The general form: *the client gains capabilities
+  between releases, so "is this duplicated?" has to be re-asked against the client's own built-ins,
+  not only against the other thing you installed.* Deleted in v3.3.0, which is the whole reason the
+  reverse pass exists.
+- **Step 9: "never" is not a delete-when — it is a component declaring itself permanent.** Four of
+  the five rows in `README.md` §1 could not be evaluated at all: three said *never* or pointed at a
+  judgement call, and the fourth was a ratio two projects proved unreadable. A table of retirement
+  conditions that cannot be evaluated is a table that will never retire anything, and it took a
+  year's worth of build steps to notice because every individual row looked reasonable. The rule
+  now, and the reason the count came down for the first time: **if a delete-when cannot be counted,
+  it must name an experiment** — usually "remove it and see" — and that experiment has to be
+  written down while the component is still wanted, not when someone is already arguing to keep it.
+- **Step 9: deterrence and absence produce identical evidence, so a silent control cannot be
+  retired on its own telemetry.** The Stop gate's delete-when asked for a pass rate; the number
+  cannot be read even when counted live, because a gate that never fires *because the session
+  pre-empts it* and one that never fires *because it was never installed* look the same from
+  outside — and the sessions ran `./prove.sh` by hand precisely because the gate exists. No amount
+  of instrumentation touches that; it is a property of what a deterrent is. What instrumentation
+  *did* fix was a smaller and genuinely recurring cost: with a pass and an unchanged-tree skip both
+  a silent exit 0, "is the gate wired?" needed a human to type `/hooks` three times across two
+  projects and one audit. v3.3.0 makes a pass say so and keeps the skip silent, so silence after
+  real work now means absent. The general form: *instrument what is ambiguous, but don't mistake
+  instrumentation for an answer to "is this worth keeping" — for a deterrent, that question is
+  answered by taking it away.*
+- **Step 9: measure the artifact, not the invocation.** `/factory-lite:harden` was typed **zero**
+  times in the one project that reached hardening — and its checklist was followed step by step
+  anyway, because the session was pointed at `skills/harden/SKILL.md` and read it. `/factory-lite:spec`
+  was likewise never typed there, while `SPEC.md` got written correctly by `brainstorming`. A usage
+  count keyed on command invocations would have retired both skills on the strength of a ritual that
+  was actually performed. **The skill file does work as a document whether or not the command fires**,
+  so deleting the command deletes the document — which is the opposite of what the count appeared
+  to recommend. Two of the three FACTORY components with real evidence behind them are read far
+  more often than they are invoked.
+- **Step 9: a backlog that only accumulates is the same failure as a harness that only accumulates,
+  one file over.** Five of nine items were rejected in the first maintenance pass, every one of them
+  with shipped-project evidence pointing at "do nothing" that had been sitting in the item for one
+  or two steps already. Nothing had rejected them because `waiting` is free to write and reads as
+  diligence, while `rejected (why)` reads as a decision someone could be wrong about. The rule that
+  fixed it is mechanical rather than a matter of taste: **an item that has waited through two
+  projects with no evidence is evidence about the item**, and a `waiting` that cannot name the
+  specific observation that would settle it is a `rejected` nobody wanted to write. Every rejection
+  in the pass carries its reopen trigger, which is what makes rejecting cheap enough to do.
+- **Step 9: the mitigation contradicted the skill it cited, and only reading the skill caught it.**
+  Item 9's whole job is arbitrating between two co-pinned skills that give opposite instructions,
+  and the first draft of the fix told `pre-alpha` to ask `superpowers:brainstorming` for its
+  **Bounded** path — on the recorded premise that "nothing about a fresh scaffold predicts which
+  path it picks". `brainstorming/SKILL.md` predicts it exactly: *"If there is no existing flow to
+  change, the task is not bounded"*, *"Architectural — new projects…"*, and in its Red Flags table
+  *"A new project has no existing flow — it is architectural"*, directly under *"Reaching for a
+  label to skip work IS the doubt — take the heavier path."* **Every FACTORY pre-alpha is a new
+  project**, so the mitigation asked the model to break the skill it was invoking, *inside the
+  instruction whose purpose was to stop those two skills fighting.* The `reviewer` agent found it in
+  the release diff, which is the third time in three projects that the reviewer is the component
+  that caught the thing nothing else would have.
+  Two general forms, and the second is the one that will recur. *A rule about another component has
+  to be checked against that component's source, not against your own notes on it* — the premise had
+  been sitting in `BACKLOG.md` since Step 7, restated through two steps, and was never once checked
+  against the 200-line file it described. And: **an inference from two runs is not a rule**. The
+  runs "differed" because one applied the skill's classification step and the other never declared a
+  path at all; reading that as "selection is unpredictable" put a *coin-flip* in the record where
+  there was a *deterministic rule*. The corrected finding is narrower and strictly better news —
+  FACTORY gets the design-doc path **every time**, which is a fixed collision, and a fixed collision
+  can be closed by a fixed instruction. The wrong version could not have been.

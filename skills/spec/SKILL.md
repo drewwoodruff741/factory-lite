@@ -19,5 +19,8 @@ Scope the requirements to the walking skeleton and nothing else — pre-alpha en
 walks. Everything the skeleton doesn't need goes in `## Deferred` now, at spec time, rather than
 swelling the requirement list; `## Out of scope` is for what you are refusing to build at all.
 Nothing belongs on both lists.
-Then update the "Run / prove" lines in CLAUDE.md to match. Do not write any code and do not
-create any other documents.
+Then update CLAUDE.md to match: replace `# <project name>` with the real name, replace the
+`<One sentence: what this is and for whom.>` placeholder, and fill the "Run / prove" lines. All
+three, not just the commands — CLAUDE.md is loaded into every session, so a placeholder left
+there is carried for the life of the project. Do not write any code and do not create any other
+documents.

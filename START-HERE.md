@@ -113,9 +113,10 @@ Hard constraints:
   the auto-accept hook), so Step 1's fix did not hold.
 - The scaffold lives at ~/dev/factory-lite (the repo root is both the plugin and its marketplace).
   Layout: .claude-plugin/{plugin,marketplace}.json · hooks/{hooks.json,stop-gate.sh} ·
-  skills/{pre-alpha,verify,spec,harden}/SKILL.md · agents/{explorer,reviewer}.md ·
+  skills/{pre-alpha,verify,spec,harden}/SKILL.md · agents/reviewer.md ·
   template/{CLAUDE.md,SPEC.md,prove.sh,.claude/settings.json} · scripts/{init.sh,harness-smoke.sh} ·
-  README.md (design) · START-HERE.md (this plan) · LESSONS.md · BACKLOG.md · docs/subguides/
+  prove.sh (the harness runs its own gate) · README.md (design) · START-HERE.md (this plan) ·
+  LESSONS.md · BACKLOG.md · docs/subguides/   (`agents/explorer.md` was deleted in v3.3.0)
 - The stack, and nothing else: VS Code + Claude Code extension › WSL2 Ubuntu (git, bash, jq, gh,
   Node LTS; per-project uv/ruff/pytest or pnpm/tsc/vitest/biome) › Claude Code built-ins
   (CLAUDE.md, skills, subagents, one Stop hook, plan mode, /clear, /context, /doctor, /memory,
@@ -444,7 +445,28 @@ before: `/goal` for long runs, path-scoped `.claude/rules/`, Code Review on PRs.
 
 ---
 
-## [ ] Step 9: The maintenance loop (30 min after each project, and per model release)
+## [x] Step 9: The maintenance loop (30 min after each project, and per model release) — done 2026-09-12
+
+> **Done 2026-09-12, v3.3.0.** The procedure is written down at the top of `BACKLOG.md` — a forward
+> pass over the items and a **reverse pass** over the components, with the net rule that adding
+> requires deleting. It was then run once against all nine items: **four built** (1, 4, 7, 9 — none
+> of them a new component), **five rejected with named reopen triggers** (2, 3, 5, 6, 8). Nothing is
+> left `waiting`.
+> **The reverse pass deleted the `explorer` agent** — zero dispatches across two shipped projects
+> and four scratch folders, while the client now ships `Explore` and `general-purpose`. **13
+> components, one fewer than after Step 3.** It also rewrote four of the five delete-when rows,
+> which could not be evaluated at all: *"never" is not a delete-when, and one that cannot be counted
+> must name an experiment.*
+> The Stop gate's ">95% of stops" is retired for a removal experiment, and it now **announces a
+> pass** while staying silent on the unchanged-tree skip — the one line that stops "wired and
+> passing" and "not installed at all" from looking identical, which had cost a human typing `/hooks`
+> three times. Both halves are asserted in the smoke test, each watched failing first.
+> **The `reviewer` agent caught a P1 in the release diff:** item 9's first mitigation told
+> `pre-alpha` to ask `brainstorming` for its Bounded path, which that skill's own rule forbids for
+> a new project — the arbitration clause was itself breaking the skill it arbitrates. Fixed to "run
+> its architectural steps 1-5 and stop at 5", and the premise it rested on ("path selection is
+> unpredictable") is withdrawn from two backlog items: the path is deterministic, FACTORY gets the
+> design-doc one every time, and a fixed collision is what a fixed instruction can actually close.
 
 **Goal:** FACTORY improves without growing back into v2.
 

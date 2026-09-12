@@ -41,6 +41,64 @@ The only thing that controls that is what is on `main`. Two consequences to hold
   whatever `main` said at install time, so **content drifts under a fixed version number**. A
   project that installed at 3.0.1 and one that installs later at 3.0.1 can hold different code.
 
+## Review procedure (Step 9) — run after every project ships, and after every model or client release
+
+Written in Step 9 and first executed against Step 9's own nine items. Two passes, and **the second
+one is the point**: an improvement loop that only adds is how v2 happened.
+
+### Forward pass — the items in this file
+
+Per item, in order: restate the **assumption** it encodes, check the **evidence** against it, set a
+**status**. Rules that make the pass honest rather than a formality:
+
+1. **Every item leaves the pass with a status.** `waiting` is a legitimate result — but only if it
+   names the specific observation that would settle it. A `waiting` with no such line is a
+   `rejected` that nobody wanted to write.
+2. **No evidence → it waits. Evidence → build it here**, in this repo, with the
+   assumption/evidence/delete-when convention, under the release rule at the top of this file.
+   Never in the project that noticed it.
+3. **One project's observation is one observation, and deletions get the same bar as additions.**
+   A wish to remove something needs shipped-project evidence exactly as a wish to add something does.
+4. **An item that has waited through two projects with no evidence is evidence — about the item.**
+   Reject it, say why, and name the trigger that would reopen it. A backlog that only accumulates
+   is the same failure mode as a harness that only accumulates, one file over.
+5. **Prefer the candidate that is prose, and then the candidate that is nothing.** Most items here
+   arrive with a list of candidates; sort them by what they cost the harness, not by what they
+   would feel like solving. "Nothing at all, because this is the project's job" is a real candidate
+   and has twice been the one with the evidence.
+6. **Count before you conclude.** Anything read out of a transcript is a measurement: state the
+   unit and the filter, de-duplicate per the record type, and remember that prose mentioning a
+   component is not that component firing. The rule is in `LESSONS.md` and it was wrong on its
+   first writing, in the direction that mattered.
+
+### Reverse pass — the components themselves
+
+The register is `README.md` §1's table, plus the file headers in `hooks/stop-gate.sh` and
+`prove.sh`. Open each one and ask, in order:
+
+1. **Has the delete-when fired?** If yes, delete the component in this release.
+2. **Can the delete-when even be evaluated?** If it cannot be counted it must name an experiment,
+   and **"never" is not a delete-when** — it makes the component permanent by default, which is the
+   thing this table exists to prevent. Rewrite it in this pass rather than next time.
+3. **Is it duplicated?** Check *both* the other installed plugin and **the client's own built-ins**.
+   The client gains agents, skills and commands between releases; a component that was unique when
+   it was written may not be any more. Checking only the other plugin is how `explorer` survived
+   two reviews.
+4. **Was it used?** Count dispatches and invocations in the transcripts, not impressions. Zero uses
+   across two shipped projects is a finding, not a gap in the record — but read it carefully: in
+   `~/dev/coach` neither `spec` nor `harden` was ever *typed*, and `harden`'s checklist was followed
+   anyway, by reading the file. **Measure the artifact, not the invocation.**
+5. **Net rule, and it is the one that binds:** after the pass, FACTORY has the component count it
+   had after Step 3 **or fewer**. Adding requires deleting. If nothing can be deleted, nothing gets
+   added, and the wish goes back to waiting.
+
+### Closing the pass
+
+Run `./prove.sh`, apply the release rule in full (it is a component change the moment `hooks/`,
+`skills/`, `agents/`, the manifests, `template/` or `scripts/` is touched), and write what the pass
+*found* into `LESSONS.md` — not what it decided. The decisions live here; the evidence has to be
+readable by the next pass, which will have forgotten this one.
+
 ## Decided in Step 6: the template pins both plugins
 
 `template/.claude/settings.json` enables **both** `factory-lite@factory` and
@@ -134,6 +192,20 @@ settings that change what the harness can be trusted to prove.
 
 ## Items
 
+**Step 9 pass, 2026-09-12 — all nine items have a status, and the file is closed to `waiting`.**
+Built: **1** (spec fills CLAUDE.md's title), **4** (the gate says it passed), **7** (measurement
+fixed, delete-when replaced), **9** (pre-alpha outranks Superpowers' planning skills in pre-alpha)
+— all four in v3.3.0, and none of them a new component. Rejected, each with a named reopen trigger:
+**2** (delete `spec` — the evidence reversed), **3** (trim `verify` — trigger void, and the trade is
+bad in kind), **5** (`main` is production — the habit held two projects), **6** (project data dirties
+the hash — zero noisy runs in two projects), **8** (guard `SPEC.md` — one project, fixed unaided, and
+the cheapest candidate contradicts "exactly one check"). The reverse pass deleted the **`explorer`
+agent**: **13 components, one fewer than after Step 3.**
+
+Five of the nine were rejected, four were built, and nothing was left `waiting`. That ratio is the
+procedure working, not a purge: rule 4 says an item that waits through two projects without
+evidence has told you something, and five of them had.
+
 ### 1. `/factory-lite:spec` should fill CLAUDE.md's title and one-liner, not just Run/prove
 - **Wish:** the `spec` skill already rewrites the "Run / prove" lines; it should also replace
   `# <project name>` and the `<One sentence: what this is and for whom.>` placeholder.
@@ -156,6 +228,17 @@ settings that change what the harness can be trusted to prove.
   `spec` — the evidence for the wish as written (a gap in *`spec`'s* instruction) has not moved
   since Step 4. What did move is this item's survival odds: item 2 did not fire, so `spec` lives on
   for now, and with it this item.
+
+- **Step 9 decision: built in v3.3.0. Item closed.** `skills/spec/SKILL.md` now replaces
+  `# <project name>` and the `<One sentence…>` placeholder as well as the Run/prove lines, and says
+  why: CLAUDE.md is loaded into every session, so a placeholder left there is carried for the life
+  of the project. Built on **one** sighting deliberately, and the reasoning is worth keeping because
+  it is the exception rather than a loosening of the rule: the evidence bar in this file is for
+  *components*, and this is one clause inside a skill that already exists — no new component, no
+  per-session cost, nothing to delete later. The gap was also confirmed by **reading the
+  instruction**, not only by observing the output: the skill named the Run/prove lines and nothing
+  else, which is a defect visible in the source. Waiting for a second sighting would have meant
+  waiting for someone to type `/factory-lite:spec` again, and two projects did not.
 
 ### 2. Delete `/factory-lite:spec` — Superpowers' brainstorming does the job better
 - **Wish:** remove `skills/spec/SKILL.md` from the plugin and let `superpowers:brainstorming` write
@@ -223,11 +306,19 @@ settings that change what the harness can be trusted to prove.
   *against* deleting `spec`: brainstorming writes an excellent `SPEC.md` **and** brings a parallel
   document chain that `pre-alpha`'s Don't list forbids. `spec` writes the artifact and stops.
   **What would settle it:** a third project where brainstorming is confined to the Bounded path (5
-  steps, "no plan document") and still produces a correct `SPEC.md`. If that holds, the wish is not
+  steps, "no plan document") and still produces a correct `SPEC.md`. **Step 9: that experiment
+  cannot be run** — a new project is Architectural by the skill's own rule, so the Bounded path is
+  unreachable here. Read "stopped at architectural step 5" wherever this paragraph says Bounded. If that holds, the wish is not
   "delete `spec`" but "invoke brainstorming in a way that cannot start a document chain", which is a
   different and cheaper change. The finding nobody predicted stands behind all of it: **two
   identical starting conditions — fresh factory-lite template, no code, placeholder `SPEC.md` — were
   classified onto different paths.**
+  **Withdrawn at Step 9 — see item 9.** Reading `brainstorming/SKILL.md` rather than the record of
+  it: a new project is Architectural *by the skill's own rule*, stated three times including in its
+  Red Flags table. The Step 7 run classified correctly; the Step 5 run never declared a path at all,
+  which is a skipped step and not a second classification. The runs differ in whether the rule was
+  applied, not in what it says — and that makes this collision **fixed and predictable**, which is
+  better news for item 9 than the version it replaces.
 - **Delete when:** n/a — this *is* a deletion. **Trigger to act:** if brainstorming again writes a
   correct `SPEC.md` unprompted in Step 7's first real project, delete `spec` in that release. One
   observation is not enough; deletions get the same evidence bar as additions.
@@ -243,6 +334,26 @@ settings that change what the harness can be trusted to prove.
   separate act under the release rule, *after* the project's pre-alpha ships, because `main` is
   production and this project is downstream of it.
 
+- **Step 9 decision: rejected.** Two projects, and the evidence moved *against* the deletion rather
+  than failing to arrive. `brainstorming` writes an excellent `SPEC.md` — twice now — and brings a
+  parallel document chain that `pre-alpha`'s Don't list forbids; `spec` writes the artifact and
+  stops. Deleting the one that stops, in favour of the one that has to be restrained, is the wrong
+  direction. The cost of keeping it is ~50 tokens, command-only, `disable-model-invocation: true`.
+- **A usage count from Step 9's reverse pass, because it cuts both ways and the second half is the
+  one that decides it.** Across every FACTORY-era transcript, `/factory-lite:spec` was typed **3
+  times in scratch folders and 0 times in the one real project**. Read alone that is an argument for
+  deletion. But `/factory-lite:harden` was typed **0 times in that project too** — and its checklist
+  was followed anyway, step by step, because the session was pointed at `skills/harden/SKILL.md` and
+  read it. **The skill file is doing work as a document whether or not the command is invoked, and
+  deleting the command deletes the document.** That is now rule 4 of the reverse pass.
+- **What would reopen it** is no longer "a third project where brainstorming writes a correct
+  SPEC.md" — there are two of those. It is a project where brainstorming is **stopped at
+  architectural step 5** (see item 9, corrected: the Bounded path is unreachable for a new project
+  by brainstorming's own rule) and still produces a correct `SPEC.md` with no document chain. If
+  that holds, the wish was never "delete `spec`"; it was "invoke brainstorming in a way that cannot
+  start a chain", which item 9 shipped as prose in v3.3.0 at no cost — **so the next project
+  observes this for free**, because v3.3.0 now tells it to stop at 5.
+
 ### 3. Trim `verify` item 2 — Superpowers says it better
 - **Wish:** cut or shorten item 2 of `skills/verify/SKILL.md` ("show evidence, don't assert").
 - **Assumption it encodes:** that Claude will assert success without running the command. Still
@@ -253,6 +364,17 @@ settings that change what the harness can be trusted to prove.
 - **Delete when:** n/a — a trim, not a component.
 - **Status:** waiting (do it in the same release as item 2, if item 2's trigger fires — one edit to
   the skill, one bump, not two)
+
+- **Step 9 decision: rejected.** Its stated trigger — "do it in the same release as item 2, if item
+  2's trigger fires" — is void, because item 2 is rejected. On its own merits it has waited through
+  two projects and neither produced a single instance of the duplication costing anything, which
+  procedure rule 4 treats as evidence about the item. And the trade is bad in kind rather than in
+  size: `verify` item 2 is the human-readable half of the only claim FACTORY makes for itself — what
+  "done" means — and trimming ~25 tokens makes that claim depend on a separately-pinned plugin being
+  present to state it. Subtraction is the point of this pass; subtracting your own load-bearing
+  sentence in favour of another plugin's copy of it is not the same act. **Reopen when:** Superpowers
+  is ever unpinned from the template, at which point the question inverts and this line is the only
+  place the rule exists.
 
 ### 4. A project cannot tell whether the harness actually loaded
 - **Wish:** something should make a missing Stop gate *loud*. Candidates, none chosen: `init.sh`
@@ -289,6 +411,22 @@ settings that change what the harness can be trusted to prove.
   should be able to tell the gate is **working**", which a missing install and a never-triggered
   install both fail. Still no candidate chosen, still `waiting`.
 
+- **Step 9 decision: built in v3.3.0, and the item is closed — both halves, by two different
+  mechanisms.** The **missing-install** half was closed in Step 6: `init.sh` installs loudly and
+  fails loudly, which is why Step 7's `/hooks` checkpoint passed. The **is-it-working** half — the
+  widening above, and the harder one, since a never-triggered install and a missing one were
+  indistinguishable — is closed by the same one line that fixes item 7's measurement: the gate now
+  prints `FACTORY gate: ./prove.sh passed.` after a real run and stays **silent** on the
+  unchanged-tree skip. So on the first stop after any code change, silence now means *absent*, where
+  before it meant either. Both halves of that behaviour are asserted in `scripts/harness-smoke.sh`,
+  each watched failing on a broken gate before being trusted.
+- **Residual, recorded rather than papered over:** a chat-only turn is still silent, so the signal
+  is diagnostic only after work. That is deliberate — a gate that announces itself on every turn is
+  one that gets tuned out — and it means "I saw nothing" is still ambiguous if nothing was built.
+- **Rejected from the candidate list:** `prove.sh` refusing to report PASS unless the gate invoked
+  it. It couples a project's definition of done to the harness being present, which is backwards:
+  `prove.sh` has to work for a human typing it, in a checkout with no plugin installed.
+
 ### 5. `main` is production, and nothing marks the difference
 - **Wish:** some separation between "pushed" and "released" — a `release` branch, a pinned `ref` in
   the marketplace source, or a second marketplace entry. Explicitly **not** chosen yet.
@@ -311,6 +449,17 @@ settings that change what the harness can be trusted to prove.
   reach the marketplace clone but change no plugin component and are safe; anything under
   `hooks/`, `skills/`, `agents/`, the manifests, `template/` or `scripts/` ships as behaviour the
   moment it is pushed, and gets the full five-part rule or does not get pushed at all.
+
+- **Step 9 decision: rejected, with a named reopen trigger.** Two projects, and the habit held both
+  times. The part of the release rule that used to depend on memory — and was broken twice in one
+  session — is now *enforced*: `./prove.sh` runs the smoke test, the four validate calls and the
+  manifest-agreement check, and the Stop gate runs `./prove.sh`. What is left to the habit is a
+  single decision, "don't push work in progress to `main`", and none of the candidates (release
+  branch, pinned `ref`, second marketplace entry) removes that decision — they relocate it, and
+  charge a permanent piece of machinery for the move. One project downstream is not enough to buy
+  it. **Reopen when:** a work-in-progress push actually reaches a project, or a **second** project
+  exists downstream of `main` — two consumers is where "don't push" stops being one person's
+  discipline and starts being a coordination problem.
 
 ### 6. A project's own data files make the gate re-run on every turn
 - **Wish:** something should stop a project's runtime data from being counted as a source change.
@@ -346,6 +495,16 @@ settings that change what the harness can be trusted to prove.
 - **Status:** waiting, on **zero** observations. Explicitly **not** to be built on the strength of
   the prediction above — that is the accretion failure mode LESSONS records for v2, where every
   addition sounded good on paper. It needs a project that actually got bitten.
+
+- **Step 9 decision: rejected.** Two projects have now had this exact shape — coach's own data
+  file, then `.pytest_cache/` and `.ruff_cache/` arriving with `pytest` and `ruff` at hardening —
+  and both were solved inside the project by two lines of `.gitignore`, with no harness involvement
+  available, wanted or missed. **Zero noisy gate runs have been observed in two projects**, which is
+  precisely the observation the item's own status line said it required. Per procedure rule 5, the
+  candidate holding the only evidence either way is "nothing at all, because this is the project's
+  job", and that is now the decision rather than the default. **Reopen when:** a project is actually
+  bitten — the gate re-running on every turn because of files the project did not think to ignore,
+  observed, not predicted.
 
 ### 7. The Stop gate's own delete-when condition cannot be measured
 
@@ -452,6 +611,32 @@ settings that change what the harness can be trusted to prove.
   retired on evidence. That is an argument for fixing the measurement, **not** an argument that the
   gate has earned permanence.
 
+- **Step 9 decision, in three parts. Item closed.**
+  1. **The hand-tally candidate is struck**, exactly as Step 8's evidence requires. It rested on the
+     assumption that the problem was reconstruction after the fact; counting live was tried and
+     produced "did not block", which is the complement of the number you can already read from the
+     transcript. A candidate whose assumption has been tested and falsified does not stay on a list.
+  2. **The numeric delete-when is retired and replaced with a removal experiment.** ">95% of stops
+     where the gate ran" fails three separate ways, and only the first is fixable: pass and skip
+     were both a silent exit 0 (fixed, part 3); the denominator is *stops*, and it collapses as
+     sessions run in longer turns, so the ratio drifts toward "delete" precisely as the model gets
+     more autonomous; and a gate that never fires because the session pre-empts it produces exactly
+     the tally of one that was never installed. The third is fatal, and no amount of instrumentation
+     touches it — **deterrence and absence are indistinguishable from the outside**. The replacement,
+     now in `README.md` §1 and the file header: *delete when a project runs to completion with the
+     gate removed and `prove.sh` still runs before every stop.* Taking it away is the only test that
+     separates the two cases, so that is the test.
+  3. **The `systemMessage` on PASS is built in v3.3.0** — but justified by **finding 5**, not by the
+     ratio, which is being abandoned. The recurring, concrete cost was that "is the gate actually
+     wired?" could not be answered from any transcript and needed a human to type `/hooks`, three
+     times across two projects and one audit. The gate now says `FACTORY gate: ./prove.sh passed.`
+     after a real run and stays silent on the unchanged-tree skip; `scripts/harness-smoke.sh`
+     asserts both, and both assertions were watched failing on a deliberately broken gate first.
+- **What is deliberately left unsolved:** the ratio. Not because it is hard to instrument but
+  because it does not answer the question it was written for. The residue is a fact about the
+  component rather than a defect in the item — **retiring this gate will cost a deliberate
+  experiment, not a tally** — and knowing that in advance is cheap.
+
 ### 8. Nothing guards `SPEC.md`, which is what everything else is measured against
 
 - **Wish:** something should notice when `SPEC.md` loses content. Candidates, **none chosen**: the
@@ -477,6 +662,17 @@ settings that change what the harness can be trusted to prove.
   a live counter-argument from the item directly above it. Revisit if a second project loses spec
   content, or if one is found to have been running against a damaged `SPEC.md` without noticing.
 
+- **Step 9 decision: rejected.** One project, which found the damage *and fixed it unaided* in the
+  same session — item 6's shape exactly, and item 6's rejection is the precedent. The cheapest
+  candidate is worse than unearned: it **contradicts a settled design decision**. `template/prove.sh`'s
+  lite section is *exactly one check*, the walking-skeleton check, and shipping a seven-heading spec
+  assertion inside it makes every new project's pre-alpha start with two. Coach added its assertion
+  at **hardening**, which is where a second check belongs and where `harden` step 5 already asks for
+  one. **Reopen when:** a second project loses `SPEC.md` content, **or** a project is found to have
+  been running against a damaged `SPEC.md` without noticing. The second is the dangerous case — the
+  first was caught within one session by the `reviewer` agent, and nothing currently would surface
+  the second.
+
 ### 9. Superpowers and FACTORY give contradictory instructions, and nothing arbitrates
 
 - **Wish:** the stack should say which planning tool applies at which phase, rather than shipping
@@ -492,10 +688,12 @@ settings that change what the harness can be trusted to prove.
     **Architectural** path whose step 6 writes a design doc and step 9 hands off to
     `writing-plans`. `skills/pre-alpha/SKILL.md:24` says **"SPEC.md is the only planning
     artifact."** Both are loaded, and they cannot both be obeyed.
-  - **Path selection is not predictable from project state.** Two fresh factory-lite scaffolds,
-    identical conditions — no code, placeholder `SPEC.md` — were classified differently: the Step 5
-    run never declared a path, the Step 7 run declared Architectural. The latter produced 1911 lines
-    of design-plus-plan referencing itself rather than `SPEC.md`, all of it deleted.
+  - ~~**Path selection is not predictable from project state.**~~ **Corrected at Step 9: it is
+    perfectly predictable, and that is worse.** A new project is Architectural by the skill's own
+    rule, so FACTORY pre-alpha gets the design-doc path *every time* — the Step 7 run was right and
+    the Step 5 run had simply not declared a path. It produced 1911 lines of design-plus-plan
+    referencing itself rather than `SPEC.md`, all of it deleted, and it will do so again on every
+    project unless something stops it at step 5.
   - `writing-plans` then specified a **57-test TDD suite** in pre-alpha, where `README.md:115-117`
     says the single `prove.sh` check stands in for a suite until hardening.
   - The same plan placed the `prove.sh` check at **task 9 of 9**, which would have left the Stop
@@ -508,3 +706,50 @@ settings that change what the harness can be trusted to prove.
   candidates above are *prose*, not components, so the usual accretion objection is weaker here
   than it looks. Related: item 2 (delete `spec`), whose evidence now runs the other way precisely
   because `brainstorming` brings this document chain with it.
+- **Step 9 decision: built in v3.3.0, as prose, in the skill that is already loaded at the moment
+  the conflict happens.** This is the one item where the usual accretion objection genuinely is
+  weaker, and Step 7's evidence is the strongest in the file: the cost was a human noticing, and it
+  worked only because the conflict was being watched for. Two clauses in
+  `skills/pre-alpha/SKILL.md`, no new component, no always-on cost beyond the words:
+  - the Don't list's "SPEC.md is the only planning artifact" now says it **outranks** any other
+    skill that wants a design doc or a plan file — use its questions, put the answers in SPEC.md,
+    don't let the chain start — and names the operational mitigation: run `brainstorming`'s
+    **architectural steps 1-5** (explore, clarifying questions, 2-3 approaches, sectioned design)
+    and **stop at 5**, before step 6 writes the design doc and step 9 hands off to `writing-plans`.
+  - the Do list's "write the `./prove.sh` check before the code it checks" now says what to do when
+    a planning skill hands you a task list with that check late in it: **reorder it so the check is
+    task 1**, because until it exists the gate is dormant and nothing is enforced for the whole
+    build. That is the exact collision Step 7 caught at task 9 of 9.
+- **`README.md` §3 carries the same rule for a human reader**, with the precedence stated in both
+  directions: `pre-alpha` outranks Superpowers' planning skills **in pre-alpha**; at hardening the
+  precedence flips and those skills are the point. A stack that says which tool wins where is a
+  different thing from a stack that ships two and hopes.
+- **The two candidates not taken:** a line in `template/CLAUDE.md` (always-loaded, and the conflict
+  is phase-specific — the 60-line budget should not carry it), and "nothing, a human chooses each
+  time" (which is what Step 7 did, at the cost of nearly losing the check-first discipline to a
+  1608-line plan that was *better written* than the rule it broke).
+- **The third candidate — "pin `brainstorming` to its Bounded path" — is struck, and this corrects a
+  claim this file has carried since Step 7.** The `reviewer` agent caught it in the release diff, by
+  reading `brainstorming/SKILL.md` instead of the record of it. The skill's classification rule is
+  explicit and it is not ambiguous for our case: *"Bounded… If there is no existing flow to change,
+  the task is not bounded"* (line 38), *"Architectural — new projects…"* (line 45), and in the Red
+  Flags table, *"A new project has no existing flow — it is architectural"* — with *"Reaching for a
+  label to skip work IS the doubt — take the heavier path"* directly above it. **Every FACTORY
+  pre-alpha is a new project, so it is Architectural by rule**, and a mitigation that asks for
+  Bounded asks the model to violate the skill it is invoking, at exactly the moment this item exists
+  to stop two skills fighting. The mitigation that survives is to stop *inside* the path it will
+  take anyway: steps 1-5 are the useful half and contain no artifact but the design in chat; steps
+  6-9 are the chain.
+- **So "path selection is not predictable from project state" (below, and in item 2) is withdrawn.**
+  It was inferred from two runs rather than from the rule: the Step 7 run declared Architectural,
+  which was **correct**, and the Step 5 run *never declared a path at all*, which is a run that
+  skipped the classification step — not a run that classified Bounded. What varied was whether the
+  skill's own first move was performed and announced, not what its rule says. The corrected finding
+  is narrower and more useful: **the conflict is not that path selection is a coin-flip; it is that
+  the path FACTORY always gets is the one that writes a design doc.** That is a fixed, predictable
+  collision, which is why a fixed instruction can close it.
+- **Corroboration found in Step 9's reverse pass, unlooked for:** `~/dev/coach/.claude/settings.local.json`
+  contains exactly **one** granted permission for the entire project — `mkdir -p
+  /home/drew/dev/coach/docs/superpowers/specs` — plus an `additionalDirectories` entry for the same
+  path. The only permission dialog the project ever raised was the document chain asking for
+  somewhere to put itself.

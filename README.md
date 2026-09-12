@@ -19,7 +19,6 @@ factory-lite/                              <- repo root is BOTH the plugin and i
 │   ├── spec/SKILL.md                      /factory-lite:spec  -> interview -> SPEC.md (manual)
 │   └── harden/SKILL.md                    /factory-lite:harden -> graduate to hardening (manual)
 ├── agents/
-│   ├── explorer.md                        read-only research, haiku
 │   └── reviewer.md                        fresh-context gap review vs SPEC.md, opus
 ├── template/                              per-project files a plugin can't ship; init.sh copies them
 │   ├── CLAUDE.md                          ≤ 60 lines: run/prove commands, gotchas, 4 working rules
@@ -37,25 +36,48 @@ factory-lite/                              <- repo root is BOTH the plugin and i
 
 ## 1. Design decisions (and the assumption each one encodes)
 
-Every component here follows the header convention in `hooks/stop-gate.sh`: **what assumption
-about the model it encodes, what evidence motivated it, and when to delete it**. That is the
-"what can I stop doing?" pass Anthropic recommends, made routine.
+Every component carries **what assumption about the model it encodes, what evidence motivated it,
+and when to delete it**. `hooks/stop-gate.sh` and `prove.sh` carry theirs as a file header; for
+everything else the table below is the register, and it is the one you read in the reverse pass.
+That pass — "what can I stop doing?" — is written down as a procedure at the top of `BACKLOG.md`,
+and it is the half that keeps this small.
 
 | Piece | Assumption it encodes | Delete when |
 |---|---|---|
-| Stop gate (`prove.sh`) | Claude sometimes stops before the check passes | it passes first time on >95% of the stops **where the gate actually ran** — see below |
-| `pre-alpha` skill | Claude over-abstracts before there's a working slice | `/doctor` says it's redundant or a model release fixes it |
-| `reviewer` agent | the agent that wrote the code grades itself generously | never, cheap and still recommended by Anthropic |
-| `explorer` agent | research bloats the main context | never, same reason |
-| `spec` + `harden` commands | phase changes need a deliberate ritual | you stop skipping them |
+| Stop gate (`prove.sh`) | Claude sometimes stops before the check passes | a project runs to completion with the gate **removed** and `prove.sh` still runs before every stop — see below |
+| `pre-alpha` skill | Claude over-abstracts before there's a working slice | a pre-alpha runs clean with the skill **disabled**: no abstraction, no options, no parallel planning document |
+| `reviewer` agent | the agent that wrote the code grades itself generously | two consecutive projects reach hardening with every `reviewer` pass returning no P0/P1 |
+| `verify` skill | Claude reports success from intent rather than from output | Superpowers is unpinned from the template **and** a project stops asserting done without evidence for a whole phase |
+| `spec` + `harden` commands | phase changes need a deliberate ritual | two projects write a correct `SPEC.md` (every heading, `Phase:`, scope bounded to the skeleton) without `spec`, and one graduates correctly without reading `harden` |
 
-**Reading the Stop gate's delete-when.** "Stops" is not every stop. The gate hashes the tree
-(HEAD + staged/unstaged diff + untracked non-ignored file contents) and exits 0 without running
-`prove.sh` when nothing has changed since the last PASS, so chat-only turns never reach the check
-and must not be counted as passes — doing so inflates the ratio toward 95% with conversation and
-retires the gate on the strength of chatter. Count only stops after a tree change. In a non-repo
-the gate never skips at all (the fallback state can never match), which is one more reason to
-`git init` before the first session.
+**A delete-when that cannot be counted must name an experiment, and "never" is not a delete-when.**
+Step 9 rewrote four of these five rows, because the originals were unusable in exactly two ways.
+Three said *never* or pointed at a judgement call, which makes a component permanent by default —
+the opposite of what this table is for. The Stop gate's said `>95% of stops`, and two projects
+proved that number cannot be produced *or* read: a pass and an unchanged-tree skip were both a
+silent exit 0 (fixed in v3.3.0 — a pass now says so, the skip stays silent); the denominator is
+stops, and it collapses as sessions run in longer turns; and a gate that never fires because the
+session pre-empts it produces exactly the tally of a gate that was never installed. **Deterrence
+and absence are indistinguishable from the outside**, so every row above that could not be counted
+now names a removal experiment instead. The `spec`/`harden` row is the caution worth carrying:
+its old wording ("you stop skipping them") technically fired — neither command was typed in the
+one real project — while both rituals were performed anyway, one of them by reading the skill file
+as a document. *Measure the artifact, not the invocation.* (`verify` had no row at all until Step 9
+went looking — a shipped component with its delete-when nowhere, which is what a register is for.)
+
+**One edge the PASS message inherits:** in a **non-repo** the gate never skips, because the fallback
+tree state is `nogit-$(date +%s)` and can never match the last one. So a project that was never
+`git init`-ed gets `prove.sh` re-run *and* the announcement on every stop, chat-only turns included
+— the behaviour is unchanged from v3.2.0, only the noise is new. `git init` before the first
+session, which was already the advice.
+
+**Deleted in v3.3.0: the `explorer` agent** (read-only research, haiku), on the first reverse
+pass. Two shipped projects and four scratch folders dispatched it **zero** times — the only
+subagent ever dispatched in any of them is `reviewer`, 7 times — and the client now ships `Explore`
+and `general-purpose`, which do the same job and are always present. Its delete-when had said
+"never, same reason", which is how a component with no demand survives two projects. The
+duplication check in Step 5 had compared every component against *Superpowers* and never against
+the **client's own built-ins**; that is now part of the procedure.
 
 What is **not** here on purpose: role-play agents (architect, PM, QA…), always-on rules, a
 formatter hook, memory/work-record machinery, model-routing, security scanning as a hook.
@@ -110,6 +132,24 @@ Division of labor:
 | brainstorming, writing plans, executing plans | what "done" means (`prove.sh` + Stop gate) |
 | TDD, systematic debugging, worktree isolation | the phase discipline (pre-alpha → harden) |
 | subagent-driven development with review | the SPEC.md-gap reviewer at stop time |
+
+**Which one wins where they disagree (v3.3.0).** They do disagree, and Step 7 paid for finding
+out: `brainstorming`'s Architectural path writes a design doc and hands off to `writing-plans`,
+which produced 1911 lines of planning artifact beside a 71-line `SPEC.md`, specified a 57-test TDD
+suite in pre-alpha, and put the `prove.sh` check at task 9 of 9 — which would have left the Stop
+gate dormant for the entire build. All of it collided with `pre-alpha/SKILL.md`, both were loaded,
+and only a human noticing kept the discipline. So `pre-alpha` now says it outranks them **in
+pre-alpha**: SPEC.md is the only planning artifact, and the `prove.sh` check is task 1 of whatever
+task list arrives. At hardening the precedence flips and Superpowers' planning and TDD skills are
+the point.
+
+The mitigation that does **not** work is asking `brainstorming` for its Bounded path: by its own
+rule "a new project has no existing flow — it is architectural", so every FACTORY pre-alpha is
+Architectural and requesting otherwise asks the model to break the skill it is invoking. The
+mitigation that does work is stopping inside the path it will take anyway — **run its architectural
+steps 1-5 and stop at 5**, where the design has been presented and approved but step 6's design doc
+and step 9's `writing-plans` handoff have not happened. Everything useful is in steps 1-5; the
+chain is 6-9.
 
 Two knobs worth knowing:
 - In pre-alpha, use Superpowers' brainstorming to feed `/factory-lite:spec`, but let the single

@@ -3,13 +3,21 @@
 #
 # Assumption this encodes: Claude will sometimes say "done" before ./prove.sh passes.
 # Evidence: every pre-alpha push where "looks done" wasn't done.
-# Remove when: a model release makes prove.sh pass on first stop >95% of the time.
+# Delete when: a project runs to completion with this gate removed and ./prove.sh still runs
+#   before every stop. That is a removal experiment, not a tally, and it is deliberate.
+#   The old condition -- "prove.sh passes first time on >95% of the stops where the gate ran" --
+#   was retired at Step 9 after two projects showed it cannot be read even when counted live:
+#   a pass and an unchanged-tree skip were both a silent exit 0 (fixed below, in the PASS arm);
+#   the denominator is stops, and it collapses as sessions run in longer turns; and a gate that
+#   never fires because the session pre-empts it produces exactly the tally of one that is not
+#   wired at all. Deterrence and absence are indistinguishable from the outside, so the only
+#   honest test of this component is taking it away.
 #
 # Behaviour:
 #   - No executable ./prove.sh in the working dir  -> exit 0 (no gate; lite by design)
 #   - ./prove.sh is still the template placeholder -> exit 0 with a notice (dormant, see below)
-#   - Nothing changed since the last PASS          -> exit 0 (don't re-run on chat-only turns)
-#   - prove.sh passes                              -> exit 0 and remember the tree state
+#   - Nothing changed since the last PASS          -> exit 0, silently (don't re-run on chat-only turns)
+#   - prove.sh passes                              -> exit 0, says so, and remembers the tree state
 #   - prove.sh fails                               -> exit 2 with the tail of its output (Claude keeps working)
 #   - 3 consecutive failures in one session        -> exit 0 and hand control back to the human
 # Claude Code itself also stops after 8 consecutive Stop-hook blocks, so this cannot loop forever.
@@ -71,6 +79,11 @@ out="$(./prove.sh 2>&1)"; rc=$?
 if [ "$rc" -eq 0 ]; then
   printf '%s' "$state" > "$marker"
   rm -f "$count_file"
+  # A pass says so, and the unchanged-tree skip above stays silent. Evidence (Steps 7, 8, v3.2.0):
+  # while both were silent, "the gate ran and passed" and "the gate is not wired at all" produced
+  # identical transcripts, and settling which one it was cost a human typing /hooks three separate
+  # times. One line, only after real work, is the cheapest thing that tells them apart.
+  printf '%s\n' '{"systemMessage":"FACTORY gate: ./prove.sh passed."}'
   exit 0
 fi
 

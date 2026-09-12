@@ -9,7 +9,9 @@ runs and that `./prove.sh` can check. Everything else waits.
 
 ## Do
 - Build the slice named in SPEC.md under "Walking skeleton" first. Nothing else until `./prove.sh` passes on it.
-- Write the `./prove.sh` check before the code it checks. The check is the spec.
+- Write the `./prove.sh` check before the code it checks. The check is the spec. If a planning
+  skill hands you a task list with that check late in it, reorder it so the check is task 1:
+  until it exists the Stop gate is dormant and nothing is enforced for the whole build.
 - Prefer the most boring solution: one file or module until it hurts, plain functions over classes, hardcode before configuring, inline before abstracting.
 - Write code that reads like the surrounding code: match its comment density, naming, and idiom.
 - State assumptions and ask when SPEC.md is ambiguous rather than picking an interpretation silently.
@@ -21,7 +23,14 @@ runs and that `./prove.sh` can check. Everything else waits.
 - Add options, flags, settings, or environment variables nobody asked for.
 - Build for a second backend, provider, model, or platform before the first one works end to end.
 - Write tests beyond the skeleton check for behavior that doesn't exist yet.
-- Create planning, decision, or analysis documents. SPEC.md is the only planning artifact.
+- Create planning, decision, or analysis documents. SPEC.md is the only planning artifact. This
+  outranks any other skill that wants a design doc or a plan file: use its questions, put the
+  answers in SPEC.md, and don't let the chain start. (`superpowers:brainstorming` is worth running
+  in pre-alpha — it writes a good SPEC.md — and a new project is **Architectural** by its own rule,
+  so don't ask it for the Bounded path. Run its architectural steps 1-5 — explore, clarifying
+  questions, 2-3 approaches, sectioned design — and **stop at 5**. The design lands in SPEC.md.
+  Step 6 writes `docs/superpowers/specs/…-design.md` and step 9 hands off to `writing-plans`:
+  that is the chain, and stopping before it is the whole mitigation.)
 - Change the harness (hooks, agents, skills, CLAUDE.md rules) mid-build. Note the wish in `## Deferred`; harness changes happen in FACTORY between projects.
 
 ## Definition of pre-alpha done
