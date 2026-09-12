@@ -371,6 +371,14 @@ settings that change what the harness can be trusted to prove.
   does not merely lack a numerator: **its denominator collapses as the model works in longer
   turns**, and the metric drifts toward "delete" precisely as sessions get more autonomous. Any
   replacement has to count something that does not shrink with turn length.
+  **A fifth, found in v3.2.0: the defect obstructed the verification of its own fix.** After the
+  harness was given its own `prove.sh` and the plugin enabled, "is this gate actually wired?" could
+  not be answered from the transcript — **no gate record of any kind existed**, which is equally
+  consistent with "wired and passing silently" and "not wired at all". Settling it required a human
+  to type `/hooks`. The cost of leaving this item open is therefore concrete and recurring rather
+  than hypothetical: **every future check of the gate degrades into asking a person.** This is the
+  strongest argument yet for the cheapest candidate on the list — a one-line `systemMessage` on
+  PASS — and it should be weighed first at Step 9.
 - **Delete when:** n/a until something is chosen.
 - **Status:** waiting, on one project's observation, and deliberately **not** decided in Step 7 —
   the step's guardrail forbids changing the harness mid-project, and every candidate above is a

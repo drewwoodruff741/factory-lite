@@ -582,3 +582,20 @@ depend on.
   of manifests**, and only the new check caught it. The general form: *a tool that enforces a
   discipline on others and exempts itself is not enforcing a discipline, it is expressing a
   preference.*
+- **v3.2.0: `claude plugin list` aggregates install records across projects, so "three enabled
+  copies" is one registration.** Verifying the harness's own gate, `plugin list` in
+  `~/dev/factory-lite` reported **three** `factory-lite@factory` entries (3.1.0, 3.2.0, 3.1.0), all
+  "Scope: project", all enabled — which would mean `prove.sh` running three times per stop. `/hooks`
+  in the same folder showed `Stop` carrying exactly **two** hooks, the notifier and the gate. The
+  listing was install records from coach, the harness and old scratch folders, with no path to tell
+  them apart. Same family as Step 3's lesson: **`/hooks` is the authority on what is loaded; the CLI
+  inventory is the authority on what is on disk, and they answer different questions.** The version
+  duplication is expected too — the cache directory is named for the version while holding whatever
+  `main` said at install time.
+- **v3.2.0: the silent-pass defect blocked the verification of its own fix.** After installing the
+  harness's gate, the transcript carried **no gate record of any kind** — which is equally
+  consistent with "wired and passing silently" and "not wired at all", because a pass leaves no
+  trace (`BACKLOG` item 7). The fix could only be confirmed by a human typing `/hooks`. Leaving item
+  7 open is a defensible call — it wants a second project's evidence — but the cost is no longer
+  hypothetical: *a component that cannot report success cannot be verified by the same evidence that
+  would verify anything else, and every check of it degrades into asking a person.*
