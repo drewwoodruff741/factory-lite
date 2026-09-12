@@ -73,28 +73,28 @@ Hard constraints:
   matters downstream: v2's whole harness cost ~10.5k above the 32.3k floor, so v3 is judged
   against 10.5k — and Step 2's finding was that v2's damage was behavioural, not contextual, so a
   small /context number is necessary but never sufficient.
-- Step 4 is done, do not redo any of it: the gate was watched live in the extension — three
-  consecutive blocks on a premature stop, the 3-strike loop-guard release, and clean stops on a
-  green tree. v3 startup is **34.7k, i.e. +2.4k above the 32.3k floor** against v2's ~10.5k
-  (LESSONS.md has the breakdown; ~1.9k of that 2.4k is an unexplained system-tools delta that is
-  probably not ours). The harness is now **v3.0.1**: the Stop gate is dormant while `prove.sh`
-  still holds the template TODO, because gating on it blocked the first turn of a fresh project,
-  `/factory-lite:spec` included. Three interface facts worth keeping: the **CLI and the extension
-  keep separate trust records** (a CLI "workspace not trusted" warning says nothing about what a
-  session loaded); `claude plugin details <name>` **does** work on a skills-dir plugin once the
-  folder is CLI-trusted, and reports ~377 tok always-on for factory-lite; and a slash command
-  typed in the window open on the *harness repo* returns "Unknown command" because no plugin is
-  loaded there.
 - Step 3 is done, do not redo any of it: the scaffold is published at
-  github.com/drewwoodruff741/factory-lite (public), default branch `main`, tagged `v3.0.0`, both
-  `<your name>` blanks filled with "Drew", and `template/.claude/settings.json` already pins that
-  repo. `bash scripts/harness-smoke.sh` prints `harness smoke: PASS` and the plugin validates
-  clean. Two interface corrections from that step: `claude plugin validate .` here checks only the
-  *marketplace* manifest (root holds both, marketplace wins) — the plugin manifest and components
-  need `claude plugin validate .claude-plugin/plugin.json --strict`, `... validate skills --strict`
-  and `... validate agents --strict`; and `claude plugin details <name>` only works on an
-  *installed* plugin (its error message suggests `--plugin-dir`, which that subcommand does not
-  accept), so there is no pre-install token-cost read.
+  github.com/drewwoodruff741/factory-lite (public), default branch `main`, both `<your name>`
+  blanks filled with "Drew", and `template/.claude/settings.json` already pins that repo.
+  `bash scripts/harness-smoke.sh` prints `harness smoke: PASS`. One interface correction from that
+  step: `claude plugin validate .` here checks only the *marketplace* manifest (root holds both,
+  marketplace wins) — the plugin manifest and components need their own calls,
+  `claude plugin validate .claude-plugin/plugin.json --strict`, `... validate skills --strict` and
+  `... validate agents --strict`. All four pass.
+- Step 4 is done, do not redo any of it. The gate was watched live in the extension: three
+  consecutive blocks on a premature stop, the 3-strike loop-guard release, and clean stops on a
+  green tree. It also refused, three times, to weaken its own check when told to make the problem
+  go away — the behavioural result Step 2 said to look for. Numbers: v3 startup is 34.7k, i.e.
+  +2.4k above the 32.3k floor, against v2's ~10.5k; the plugin's own share is ~560 tok, and ~1.9k
+  of that 2.4k is an unexplained system-tools delta that is probably not ours (LESSONS.md has the
+  breakdown). The harness is now v3.0.1, tagged and pushed: the Stop gate is dormant while
+  `prove.sh` still holds the template TODO, because gating on it blocked the very first turn of a
+  fresh project, `/factory-lite:spec` included. Three interface facts worth keeping: the CLI and
+  the extension keep separate trust records, so a CLI "workspace not trusted" warning says nothing
+  about what a session loaded; `claude plugin details <name>` does work on a skills-dir plugin once
+  the folder is CLI-trusted (it reports ~377 tok always-on for factory-lite), which supersedes
+  Step 3's note that no pre-install token read exists; and a slash command typed in the window open
+  on the harness repo returns "Unknown command" because no plugin is loaded there.
 - The scaffold lives at ~/dev/factory-lite (the repo root is both the plugin and its marketplace).
   Layout: .claude-plugin/{plugin,marketplace}.json · hooks/{hooks.json,stop-gate.sh} ·
   skills/{pre-alpha,verify,spec,harden}/SKILL.md · agents/{explorer,reviewer}.md ·
