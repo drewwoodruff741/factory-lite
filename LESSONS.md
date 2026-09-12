@@ -140,11 +140,19 @@ depend on.
   Both "skills-dir plugins never enter the registry" and "`details` doesn't work here" were
   concluded from that state and both were wrong; once trusted, `plugin list` reports
   `Status: ✔ loaded` and `plugin details` prints the full inventory and token projection.
-- **Step 4:** the WSL user config carries a **`PreToolUse` hook at user scope,
-  `~/.claude/hooks/auto-accept-hook.sh`, matcher `(all)`** — every tool call in every project is
-  auto-approved before the permission prompt can appear. Found via `/hooks` in the scratch project,
-  which listed 5 hooks: that one, three `notify.js` notifier hooks (Notification, Stop,
-  SubagentStop), and factory-lite's Stop gate. It does not affect the Stop gate, but it is the
-  same class of finding as Step 1's `bypassPermissions`: **the environment silently disarms the
-  safety the harness assumes.** Check `/hooks` for user-scope entries before concluding anything
-  about how a project behaves under permissions.
+- **Step 4:** permissions are disarmed machine-wide by **two** mechanisms in
+  `~/.claude/settings.json`: `permissions.defaultMode: "auto"`, and a `PreToolUse` hook
+  (`~/.claude/hooks/auto-accept-hook.sh`, matcher `""` = all tools, flagged
+  `_autoAcceptManaged: true`) whose script does no filtering at all — it ignores its input and
+  returns `permissionDecision: allow` for every call. Found via `/hooks` in the scratch project,
+  which listed 5 hooks: that one, three `notify.js` notifier hooks, and factory-lite's Stop gate.
+  Two consequences. First, **the permissions block in `template/.claude/settings.json` is
+  decorative on this machine** — every project init.sh creates ships an allowlist that can never be
+  consulted. Second, **no permission configuration anywhere can be observed or tested while this is
+  on**, which is why the question of whether a parent directory's `.claude/settings.local.json`
+  reaches a child project could not be answered in Step 4. It is the same class of finding as
+  Step 1's `bypassPermissions`, by a different route: **the environment silently disarms the safety
+  the harness assumes, and re-disarms it after you fix it once.**
+- **Step 4:** `claude <unrecognized-subcommand>` is **treated as a prompt**, not rejected —
+  `claude config list` (no such subcommand in 2.1.269) started a headless session and answered the
+  words as a question. Only verified subcommands print and exit. Do not guess at them.

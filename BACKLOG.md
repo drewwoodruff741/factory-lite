@@ -11,6 +11,27 @@ Format per item:
 - **Delete when:** the condition under which this component should be removed again
 - **Status:** waiting | built in vX.Y.Z | rejected (why)
 
+## Environment chores (not harness components — nothing here enters the plugin)
+
+Noted in Step 4, deliberately deferred. None of these is a FACTORY component; they are machine
+settings that change what the harness can be trusted to prove.
+
+1. **Turn off machine-wide auto-accept.** `~/.claude/settings.json` has
+   `permissions.defaultMode: "auto"` plus an `_autoAcceptManaged` `PreToolUse` hook that allows
+   every tool call unconditionally. An extension owns that hook and will rewrite the file, so
+   disable the extension in VS Code rather than hand-editing. **Deadline: before Step 7**, the
+   first real project — harness work is cheap to get wrong, a real project is not. Until then,
+   the template's permissions block is inert and no permission rule on this machine is testable.
+2. **Delete `~/dev/.claude/settings.local.json`.** Stale leftover from Step 0, when `~/dev` was
+   briefly its own project: it references a Desktop zip and a `~/dev/.git` that no longer exists.
+   Whether a parent directory's local settings reach a child project is unverified (see chore 1 —
+   it cannot be tested while auto-accept is on), and the file can only ever *grant*, so deleting
+   is strictly safer either way.
+3. **Prune `~/dev/factory-lite/.claude/settings.local.json`.** Two entries this build wrote and
+   nothing needs: `Bash(rm -rf /home/drew/dev/scratch-hello *)`, pointing at a project that no
+   longer exists, and `Bash(claude config *)`, granted for a call that turned out not to be a
+   subcommand at all.
+
 ## Items
 
 ### 1. `/factory-lite:spec` should fill CLAUDE.md's title and one-liner, not just Run/prove

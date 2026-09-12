@@ -320,6 +320,9 @@ go to FACTORY's `BACKLOG.md`, neither gets built mid-project.
 CLAUDE.md.
 
 **Guardrails:** no new hooks, agents, rules, plugins, or MCP servers during this step. Not one.
+Before starting, clear BACKLOG.md's "Environment chores" — chore 1 especially: machine-wide
+auto-accept makes every permission rule on this machine inert, including the one the template
+ships. A real project is where that stops being theoretical.
 
 ---
 
