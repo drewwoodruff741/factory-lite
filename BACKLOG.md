@@ -421,7 +421,8 @@ settings that change what the harness can be trusted to prove.
 
   **The qualitative half, which matters more here than the ratio.** The gate blocked on nothing,
   so it was never once annoying. It was also never once useful, and the session says precisely why:
-  during those six stops the `reviewer` agent found a P0 (`food_id=10**30` returning a 500 with a
+  during the six working stops (the seventh was the close-out) the `reviewer` agent found a P0
+  (`food_id=10**30` returning a 500 with a
   traceback — the exact defect the shipped item existed to prevent), a P1 (`servings=1e308`
   accepted, making a day's totals read `inf` permanently), three tests that could not fail under
   any circumstances, and three whole sections of the project's SPEC.md deleted by a scripted edit,
