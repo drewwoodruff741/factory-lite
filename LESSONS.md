@@ -489,3 +489,30 @@ depend on.
   in **opposite** directions. Recorded as `BACKLOG` item 7 and deliberately not fixed mid-project.
   The trap to avoid next time is treating this as evidence the gate has earned permanence: it is
   evidence the *measurement* was never designed, which is a different thing and a cheaper fix.
+- **Step 7: the discipline was negotiated by a document that was good, not by one that was bad.**
+  `superpowers:writing-plans` produced a 1608-line stage-1 plan — correctly scoped to five
+  requirements, explicit about its own omissions, self-reviewing hard enough to catch its own
+  arithmetic error — and it placed **the `prove.sh` check at task 9 of 9, line 1529 of 1608**. Three
+  separate FACTORY instructions say the opposite (`pre-alpha/SKILL.md:12` "write the check before
+  the code it checks"; the Step 7 sub-guide §6; the step prompt's third deliverable). Under that
+  ordering the sentinel survives tasks 1-8, so the **Stop gate announces `dormant` and enforces
+  nothing across the entire build**, arming only once everything already works. Two more collisions
+  came with it: the plan's header names the *design doc* as `Spec:` rather than `SPEC.md`, so the
+  chain routes around the file the gate and skills actually read; and it specified **57 tests in
+  pre-alpha**, where `README.md:115-117` puts the full TDD loop at hardening and lets the single
+  `prove.sh` check stand in for a suite.
+  **The lesson is about the shape of the failure, not the tool.** v2 did not die of sloppy work
+  either. An artifact that is thorough, internally consistent and clearly the product of real effort
+  is *harder* to refuse than a bad one, and "it would be a waste not to use it" is the whole
+  mechanism. The guardrail that held was having written down, before the project existed, that the
+  check goes first — because in the moment the plan was plainly better than anything the constraint
+  would produce. **Decide the order of operations while nothing is at stake, or the best available
+  artifact decides it for you.**
+- **Step 7: when deleting a document, read it for load-bearing decisions first.** The plan was
+  deleted under `pre-alpha`'s "SPEC.md is the only planning artifact", but one decision existed
+  *only* inside it: display precision (kcal 0dp, macros 1dp), which `prove.sh` depends on because it
+  asserts on rendered strings. Deleting it unread would have left the proof resting on a formatting
+  rule nothing recorded — and the failure would have surfaced months later as a broken check with no
+  traceable cause. Promoted to `SPEC.md` and `CLAUDE.md` Gotchas before the delete. The general
+  form: *a document being in the wrong place is not evidence that everything in it is worthless;
+  grep it for the things the rest of the system depends on before it goes.*

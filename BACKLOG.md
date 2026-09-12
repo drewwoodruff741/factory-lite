@@ -196,13 +196,27 @@ settings that change what the harness can be trusted to prove.
   behaviour this item is about. The scorecard never named a path. The honest record is that the bar
   was not met **and** two of its criteria were poorly specified. A future scorecard fixes the path
   first, or scores the design doc only when the path did not call for one.
-- **Status (Step 7): still waiting, and for a new reason.** Rows 1, 2, 4 and 8 passed; row 3 failed
-  (`## Deferred` arrived pre-populated with 10 items — path-independent, so this one stands); rows 6
-  and 7 are **open** — the run is parked at its own step 8, user review, with `writing-plans` not
-  yet invoked. The finding nobody predicted is the one that matters: **two identical starting
-  conditions — fresh factory-lite template, no code, placeholder `SPEC.md` — were classified onto
-  different paths.** Until path selection is predictable, "does brainstorming write a competing
-  document?" has no stable answer, and `spec` cannot be deleted on the strength of it.
+- **Row 7 closed, 2026-09-12: it did hand off, and the handoff is the strongest argument against
+  this item.** Allowed to reach its own end, brainstorming invoked `writing-plans`, which wrote
+  `docs/superpowers/plans/2026-09-12-coach-stage-1-walking-skeleton.md` — **1608 lines, 9 TDD tasks,
+  57 tests**. Scored against four criteria fixed before it ran: it scoped cleanly to stage 1 and
+  stopped without writing code (both good), it listed its own omissions explicitly (good practice),
+  but it **introduced a load-bearing decision `SPEC.md` did not carry** — display precision, which
+  `prove.sh` asserts on — and **its header points at the design doc as "Spec:", not at `SPEC.md`**.
+  Totals: **1911 lines of planning artifact beside a 71-line `SPEC.md`**, in a chain that references
+  itself rather than the file the gate, the skills and the `reviewer` agent all read.
+- **Status (Step 7): still waiting, and now with a live counter-argument rather than a neutral
+  one.** Rows 1, 2, 4 and 8 passed; row 3 failed (`## Deferred` pre-populated with 10 items —
+  path-independent, so it stands); rows 5, 6 and 7 are accounted for above. The item's own rule is
+  that deletions get the same evidence bar as additions, and this observation moved the evidence
+  *against* deleting `spec`: brainstorming writes an excellent `SPEC.md` **and** brings a parallel
+  document chain that `pre-alpha`'s Don't list forbids. `spec` writes the artifact and stops.
+  **What would settle it:** a third project where brainstorming is confined to the Bounded path (5
+  steps, "no plan document") and still produces a correct `SPEC.md`. If that holds, the wish is not
+  "delete `spec`" but "invoke brainstorming in a way that cannot start a document chain", which is a
+  different and cheaper change. The finding nobody predicted stands behind all of it: **two
+  identical starting conditions — fresh factory-lite template, no code, placeholder `SPEC.md` — were
+  classified onto different paths.**
 - **Delete when:** n/a — this *is* a deletion. **Trigger to act:** if brainstorming again writes a
   correct `SPEC.md` unprompted in Step 7's first real project, delete `spec` in that release. One
   observation is not enough; deletions get the same evidence bar as additions.
