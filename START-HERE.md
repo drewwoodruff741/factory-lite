@@ -67,11 +67,17 @@ Hard constraints:
   core.eol=lf, .gitattributes pins LF. Empty-folder /context baseline is 32.3k of a 1M window.
   Two extension quirks: /context prints no path line, and a folder needs at least one file in it
   before the extension will open a session there.
+- Step 2 is done, do not redo any of it: v2 (drewwoodruff741/factory) is tagged v2-final and
+  archived read-only on GitHub; LESSONS.md is filled with six v2 lessons plus the startup
+  measurement. Do not interview me about v2 again and do not re-measure it. The one number that
+  matters downstream: v2's whole harness cost ~10.5k above the 32.3k floor, so v3 is judged
+  against 10.5k — and Step 2's finding was that v2's damage was behavioural, not contextual, so a
+  small /context number is necessary but never sufficient.
 - The scaffold lives at ~/dev/factory-lite (the repo root is both the plugin and its marketplace).
   Layout: .claude-plugin/{plugin,marketplace}.json · hooks/{hooks.json,stop-gate.sh} ·
   skills/{pre-alpha,verify,spec,harden}/SKILL.md · agents/{explorer,reviewer}.md ·
   template/{CLAUDE.md,SPEC.md,prove.sh,.claude/settings.json} · scripts/{init.sh,harness-smoke.sh} ·
-  README.md (design) · START-HERE.md (this plan) · LESSONS.md · BACKLOG.md
+  README.md (design) · START-HERE.md (this plan) · LESSONS.md · BACKLOG.md · docs/subguides/
 - The stack, and nothing else: VS Code + Claude Code extension › WSL2 Ubuntu (git, bash, jq, gh,
   Node LTS; per-project uv/ruff/pytest or pnpm/tsc/vitest/biome) › Claude Code built-ins
   (CLAUDE.md, skills, subagents, one Stop hook, plan mode, /clear, /context, /doctor, /memory,
@@ -149,6 +155,13 @@ If something feels project-specific, it goes in that project later, not in FACTO
 executable, run `bash scripts/harness-smoke.sh` (expect `harness smoke: PASS`) and
 `claude plugin validate .` (expect no errors), commit, push, tag `v3.0.0`, push tags. It should
 explain in one line each what `plugin.json`, `marketplace.json`, and `source: "./"` do.
+
+**Repo state, checked at the end of Step 2 — do not re-derive:** branch is `master`, there is no
+remote, and there are no tags. `<your name>` appears twice: `.claude-plugin/plugin.json` (author)
+and `.claude-plugin/marketplace.json` (owner). `template/.claude/settings.json` already pins
+`drewwoodruff741/factory-lite`, which matches the `gh` login, so that line needs no change unless
+a different repo name is chosen. The step must also decide, once and with a reason, whether to
+rename `master` → `main` before publishing.
 
 **Done when:** GitHub shows the repo with the `v3.0.0` tag and both tests pass locally.
 
