@@ -1,5 +1,58 @@
 # BACKLOG (harness wishes)
 
+## Release rule (every change to the scaffold, no exceptions)
+
+Written in Step 6, and first executed against Step 6's own two changes. Run all five. Steps 3, 4
+and 5 each found a piece that a shortened version of this rule leaves out.
+
+1. `bash scripts/harness-smoke.sh` -> `harness smoke: PASS`
+2. **All four validate calls.** `claude plugin validate .` covers only the *marketplace* manifest —
+   the repo root holds both and the marketplace wins — so the plugin manifest and the components
+   need their own:
+   - `claude plugin validate .claude-plugin/plugin.json --strict`
+   - `claude plugin validate skills --strict`
+   - `claude plugin validate agents --strict`
+3. **Bump `version` in BOTH** `.claude-plugin/plugin.json` **and** `.claude-plugin/marketplace.json`
+   (`metadata.version`). Bumping one leaves the two disagreeing about what the release is.
+4. `git commit`, `git tag vX.Y.Z`, `git push && git push --tags`.
+5. Projects update via **Customize -> Plugins**, or `claude plugin update factory-lite@factory`.
+
+**What the tag actually does: nothing.** Step 6 established by observation that an installing
+project gets **`main`**, not the newest tag. `~/.claude/plugins/marketplaces/factory` is a
+*shallow, depth-1 clone of the default branch* — `git describe --tags` there fails with "No names
+found", because the clone never fetches tags at all. Confirmed four ways: the clone is on `main`;
+the extracted plugin copy contains `docs/step-6-prompt.md`, which does not exist at `v3.0.1`; the
+install record writes `gitCommitSha` = `main`'s HEAD; and the version in the cache path is a label
+copied out of `plugin.json`, not a resolved ref.
+
+So **every push to `main` ships to every project**, immediately, with no tag and no release.
+Steps 3 and 4 above remain worth doing — the version number is what `plugin list`, the cache path
+and the install record report, so a stale one makes every diagnostic lie — but understand what they
+are: bookkeeping and a human-readable marker, not a mechanism that controls what anyone receives.
+The only thing that controls that is what is on `main`. Two consequences to hold onto:
+- **There is no such thing as an unreleased commit on `main`.** Don't push work-in-progress to it.
+- The cache directory is named for the version (`cache/factory/factory-lite/3.0.1`) while holding
+  whatever `main` said at install time, so **content drifts under a fixed version number**. A
+  project that installed at 3.0.1 and one that installs later at 3.0.1 can hold different code.
+
+## Decided in Step 6: the template pins both plugins
+
+`template/.claude/settings.json` enables **both** `factory-lite@factory` and
+`superpowers@claude-plugins-official`, and `scripts/init.sh` installs both. Decided 2026-09-12;
+recorded here so it is not reopened.
+
+The argument against was real and is recorded rather than discarded: every project pays
+Superpowers' ~2.1k whether or not it ever brainstorms, and because that cost is mostly a
+SessionStart bootstrap it is re-paid on **every `/clear`** — per context, not per project. The
+argument that won: ~0.2% of a 1M window on projects that don't brainstorm is a smaller harm than a
+silent capability gap on projects that do, the ritual would be needed in a project's first ten
+minutes when nobody is thinking about plugin management, and BACKLOG item 2 (delete `spec` in
+favour of `brainstorming`) is only safe if Superpowers is present by default.
+
+**Revisit when:** a project reaches hardening and demonstrably never uses a Superpowers skill
+again, or the bootstrap grows past ~5k.
+
+
 Every "FACTORY should do X" thought from inside a project lands here, never in that
 project's harness. Items are reviewed after a project ships its pre-alpha. An item is built
 only when it has evidence; until then it waits, and that is fine.

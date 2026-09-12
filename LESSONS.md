@@ -211,6 +211,75 @@ Everything below was watched in the extension, in `~/dev/scratch-hello`, at v3.0
   `.claude/skills` symlink and therefore no plugin. Check which folder the session is rooted in
   before concluding a command does not register.
 
+## The shipping mechanism, proved (Step 6, 2026-09-12)
+
+Steps 4 and 5 both loaded factory-lite as `factory-lite@skills-dir`, a symlink into the working
+tree. That is the *testing* path. Step 6 exercised the *shipping* path — `factory-lite@factory`,
+a marketplace install from GitHub — for the first time, from a folder that had never existed, on a
+machine where the `factory` marketplace had never been fetched.
+
+**It did not work as designed, and the failure was silent.** A fresh project with
+`extraKnownMarketplaces` + `enabledPlugins` in `.claude/settings.json` got: the marketplace
+registered, the repo cloned to `~/.claude/plugins/marketplaces/factory`, the plugin copied into
+`~/.claude/plugins/cache/factory/factory-lite/3.0.1`, and the running session's in-use marker
+written into it. Three of the four things needed. What never happened was the install record in
+`installed_plugins.json` — so `/plugin` showed one plugin (superpowers, disabled) and `/hooks`
+showed four hooks, none of them the gate. A second fresh session did not fix it; this is not a
+startup-ordering race.
+
+**`enabledPlugins` is an enable flag for an already-installed plugin, not an install instruction.**
+Nothing was wrong with the repo, the manifests, or `"source": "./"`:
+`claude plugin install factory-lite@factory --scope project` succeeded in under a second against
+the same settings file, untouched.
+
+**The CLI does not read `extraKnownMarketplaces` out of the settings file either.** With the key
+sitting in the project's `.claude/settings.json`, `claude plugin marketplace update factory` still
+failed with "Marketplace 'factory' not found. Available marketplaces: claude-plugins-official".
+The settings key works on the *session* path only. So the fix is two calls, not one, and
+`scripts/init.sh` now makes them (`marketplace add … --scope project`, then `install … --scope
+project`). `--scope project` re-declares the key the template already carries and leaves
+`~/.claude/settings.json` clean — verified.
+
+Confirmed working from true cold (marketplace, cache and install record all torn down first):
+`init.sh` into a new folder, then in the extension `/plugin` shows `factory-lite@factory` enabled
+and `/hooks` shows **five** hooks, with `Stop` carrying two — the notifier, and
+`Running ./prove.sh` attributed to `Plugin`. That second Stop line is the proof.
+
+### Which ref a project actually gets: `main`. The tag is decoration.
+
+`~/.claude/plugins/marketplaces/factory` is a **shallow, depth-1 clone of the default branch**.
+`git describe --tags` there fails with "No names found" — the clone never fetches tags at all.
+Four independent confirmations: the clone reports branch `main`; the extracted plugin copy contains
+`docs/step-6-prompt.md`, which does not exist at `v3.0.1`; every install record writes
+`gitCommitSha` equal to `main`'s HEAD; and the `3.0.1` in the cache path is a string copied out of
+`plugin.json`, not a resolved ref.
+
+**Every push to `main` ships to every project, immediately.** There is no such thing as an
+unreleased commit on `main`. And because the cache directory is named for the version while holding
+whatever `main` said at install time, **content drifts under a fixed version number** — two projects
+that both report 3.0.1 can hold different code. The release rule at the top of `BACKLOG.md` says
+this where the rule is read.
+
+### Two smaller interface facts from the same step
+
+- **A project-scope `enabledPlugins` entry blocks uninstall.** `claude plugin uninstall
+  factory-lite@factory` refuses: "enabled at project scope (.claude/settings.json, shared with your
+  team)". Removing the marketplace removes the install record instead. Expect this when tearing a
+  test project down.
+- **A bootstrap script that mutates machine state needs an opt-out, because the smoke test runs
+  it.** The moment `init.sh` began installing plugins, `harness-smoke.sh` — which builds a
+  throwaway project from the template in `$TMPDIR` — started writing install records for a
+  directory it deleted seconds later. Two junk entries appeared in `installed_plugins.json` on the
+  first run of the new rule. `init.sh` now honours `FACTORY_SKIP_PLUGIN_INSTALL=1`, the smoke test
+  sets it, and the smoke test asserts all three of: the skip line printed, no install ran, and the
+  registry file is byte-identical afterwards. Caught only because the release rule says to run the
+  smoke test *before* committing.
+- **Pinned but uninstalled is indistinguishable from broken, from inside the session.** The only
+  signal that anything was wrong was an absence — no gate in `/hooks`. Nothing errored, nothing
+  warned. This is the argument for `init.sh` doing the install loudly rather than trusting a
+  declarative pin: a declarative pin that half-works fails quietly, and a project would run its
+  whole pre-alpha with no proof gate and no indication it was missing.
+
 ## What bit us
 Format: what happened → what it cost → what it taught.
 - **Over-engineering by accretion.** v2 was built for one specific task, branched into a factory,

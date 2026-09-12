@@ -297,7 +297,7 @@ FACTORY has no skill whose name resembles a Superpowers skill and the test proje
 
 ---
 
-## [ ] Step 6: Pin from GitHub and write the release rule (≈ 30 min)
+## [x] Step 6: Pin from GitHub and write the release rule (≈ 30 min)
 
 **Goal:** a brand-new folder gets the harness from GitHub with no manual copying except `init.sh`.
 
@@ -345,7 +345,12 @@ exists. Don't bump the version in this step unless something actually breaks.
 **Goal:** something runs end to end, proven by `./prove.sh`, before any architecture exists.
 
 **Bring to the session:** the Context block, your one-line idea, and the language (Python → uv,
-ruff, pytest; TypeScript → pnpm, tsc, vitest, biome).
+ruff, pytest; TypeScript → pnpm, tsc, vitest, biome). Plus one fact Step 6 established: **projects
+track `main`, not the tag** — the marketplace is cloned shallow from the default branch and tags are
+never fetched, so every push to the harness reaches this project immediately. Don't push work in
+progress to `main` while a real project depends on it. `init.sh` now also installs both plugins;
+if `/hooks` in the new project doesn't show a second `Stop` hook running `./prove.sh`, the gate is
+absent and nothing will say so.
 
 **The session produces:** a project-specific runbook: `init.sh` → `git init` → open in VS Code →
 `/brainstorm` if fuzzy → `/factory-lite:spec` with an honest Out-of-scope list (include what

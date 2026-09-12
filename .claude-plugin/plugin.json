@@ -1,8 +1,15 @@
 {
   "name": "factory-lite",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "Minimal Claude Code harness: a proof gate on Stop, pre-alpha discipline, and explorer/reviewer subagents. Layer Superpowers on top for planning and TDD.",
-  "author": { "name": "Drew" },
+  "author": {
+    "name": "Drew"
+  },
   "license": "MIT",
-  "keywords": ["harness", "verification", "pre-alpha", "stop-hook"]
+  "keywords": [
+    "harness",
+    "verification",
+    "pre-alpha",
+    "stop-hook"
+  ]
 }

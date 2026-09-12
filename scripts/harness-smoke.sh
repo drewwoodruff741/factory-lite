@@ -10,7 +10,15 @@ command -v jq >/dev/null 2>&1 || echo "warn: jq not found; the gate falls back t
 # --- a throwaway project from the template ---
 proj="$tmp/proj"; mkdir -p "$proj"; ( cd "$proj" && git init -q )
 export CLAUDE_PROJECT_DIR="$proj"   # what Claude Code exports for hooks; the gate's fallback when jq is absent
-"$here/scripts/init.sh" "$proj" >/dev/null
+reg="$HOME/.claude/plugins/installed_plugins.json"
+before="$(cat "$reg" 2>/dev/null || true)"
+init_out="$(FACTORY_SKIP_PLUGIN_INSTALL=1 "$here/scripts/init.sh" "$proj")"
+
+# 0. init.sh must not touch machine-wide plugin state when the guard is set. Without this the
+#    smoke test installs plugins into a $TMPDIR project and leaves the records behind forever.
+printf '%s' "$init_out" | grep -q 'skip   plugin install' || fail "init.sh ignored FACTORY_SKIP_PLUGIN_INSTALL"
+printf '%s' "$init_out" | grep -q 'Installing plugin' && fail "init.sh installed a plugin despite the guard"
+[ "$before" = "$(cat "$reg" 2>/dev/null || true)" ] || fail "init.sh mutated $reg during the smoke test"
 
 # 1. The untouched template placeholder -> gate is dormant (exit 0) and says so.
 #    Gating here would block the first turn of a fresh project before any code exists (Step 4).

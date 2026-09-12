@@ -1,9 +1,11 @@
 {
   "name": "factory",
-  "owner": { "name": "Drew" },
+  "owner": {
+    "name": "Drew"
+  },
   "metadata": {
     "description": "FACTORY plugins: the reusable Claude Code harness projects are started from.",
-    "version": "3.0.1"
+    "version": "3.1.0"
   },
   "plugins": [
     {

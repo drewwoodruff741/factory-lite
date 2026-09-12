@@ -11,10 +11,20 @@
   },
   "extraKnownMarketplaces": {
     "factory": {
-      "source": { "source": "github", "repo": "drewwoodruff741/factory-lite" }
+      "source": {
+        "source": "github",
+        "repo": "drewwoodruff741/factory-lite"
+      }
+    },
+    "claude-plugins-official": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-plugins-official"
+      }
     }
   },
   "enabledPlugins": {
-    "factory-lite@factory": true
+    "factory-lite@factory": true,
+    "superpowers@claude-plugins-official": true
   }
 }

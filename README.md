@@ -88,11 +88,12 @@ repo there in a scratch project, open the extension, run `/hooks` and `/context`
 
 ## 3. Integrate Superpowers
 
-In the extension: `/` → Customize → Plugins → add marketplace `anthropics/claude-plugins-official`
-→ install `superpowers`, **project scope** (widen to user scope later if `/context` stays cheap).
-Equivalent one-time commands from the integrated terminal, if you prefer:
-`claude plugin marketplace add anthropics/claude-plugins-official` then
-`claude plugin install superpowers@claude-plugins-official --scope project`.
+`scripts/init.sh` installs it, at project scope, alongside factory-lite — since Step 6 the template
+pins both plugins and init.sh installs both. Nothing to do by hand. If the install warns (no `claude`
+on PATH, no network), the manual path is `/` → Customize → Plugins → add marketplace
+`anthropics/claude-plugins-official` → install `superpowers`, **project scope**.
+
+Why every project pays its ~2.1k by default, and when to revisit that, is recorded in `BACKLOG.md`.
 
 Division of labor:
 
@@ -152,6 +153,15 @@ bash ~/dev/factory-lite/scripts/init.sh my-app && cd my-app && git init   # then
   the gate translates.
 - Update `extraKnownMarketplaces.factory.source.repo` in `template/.claude/settings.json` if
   the plugin ever moves repos.
+- **The pin enables, it does not install** (Step 6). `enabledPlugins` is a flag for a plugin that is
+  already installed, and the CLI does not read `extraKnownMarketplaces` out of the settings file at
+  all. `init.sh` therefore runs `claude plugin marketplace add … --scope project` and
+  `claude plugin install … --scope project` for both plugins. Without them a project silently gets
+  no plugin and no Stop gate — nothing errors, the gate is simply absent from `/hooks`.
+  `FACTORY_SKIP_PLUGIN_INSTALL=1` suppresses that block; `harness-smoke.sh` sets it.
+- **Projects track `main`, not the newest tag.** The marketplace is cloned shallow, depth 1, from the
+  default branch, and tags are never fetched. Every push to `main` ships to every project. Don't push
+  work in progress to it. The version number is bookkeeping — see the release rule in `BACKLOG.md`.
 - Local plugin testing without the TUI: symlink (or copy) the repo to
   `<scratch>/.claude/skills/factory-lite/`; it loads as `factory-lite@skills-dir`. Remove the
   `enabledPlugins`/`extraKnownMarketplaces` keys from that scratch project's settings first so
