@@ -44,6 +44,107 @@ Fresh session in `~/dev/scratch-hello`, the template's four files plus factory-l
   contextual**. 2.4k vs 10.5k is necessary, not sufficient. The gate test in the same step is what
   actually tests behaviour.
 
+## Cost of Superpowers, and why totals can't be differenced (Step 5, 2026-09-12)
+Fresh session in `~/dev/scratch-super`, template's four files, `factory-lite@skills-dir` 3.0.1 plus
+`superpowers@claude-plugins-official` 6.3.0 installed at **project** scope. claude 2.1.269.
+
+- **The `/context` Total is not a measuring stick. `system tools` is noise that swamps the
+  harness.** Five readings on this machine at one CLI version: **25.4k · 27.3k · 27.3k · 26.5k ·
+  24.5k** — a **±2.8k swing in a bucket we do not own**, larger than the whole harness. Installing
+  Superpowers made the raw startup *fall* by 2.1k (34.86k → 32.8k), which is obviously not a real
+  result. **Method correction: price a harness by summing the buckets you control, never by
+  differencing totals.** This supersedes Step 4's subtraction method.
+- Step 4's "+2.4k for v3" was therefore **mostly that noise**. Its own note that the harness's real
+  share was ~560 tok was right; the ~1.9k it flagged as "probably not ours" is confirmed not ours,
+  and *variable*, which is worse than a constant offset.
+- **The buckets we control:**
+
+  | | empty floor | v3 only | v3 + Superpowers |
+  |---|---|---|---|
+  | custom agents | 0 | 156 | 156 |
+  | memory files | 0 | 300 | 300 |
+  | skills | 2.8k | 2.9k | **3.7k** |
+  | messages at turn zero | ~0 | 8 tok | **1.3k** |
+  | **harness cost** | — | **~560 tok** | **~2.7k** |
+
+- **Verdict: pass, at about a quarter of v2's ~10.5k, for both plugins combined.** Nowhere near the
+  30k line that would have been a failure.
+- **Superpowers' ~2.1k splits two ways, and the split matters.** ~0.8k is the 14 skill descriptions
+  in the `skills` bucket (matching `claude plugin details`' ~688 projection). ~1.3k is its
+  **SessionStart bootstrap**, which injects the entire text of `skills/using-superpowers/SKILL.md`
+  (3,108 bytes) as `hookSpecificOutput.additionalContext`. Its matcher is `startup|clear|compact`,
+  so **it is re-paid on every `/clear`** — and FACTORY's own runbook `/clear`s between spec and
+  implementation.
+- **`claude plugin details` under-reports a context-injecting hook.** It labels that SessionStart
+  hook `(harness-only — no model context cost)`. It costs ~1.3k every session. Read the hook script
+  itself before trusting the projection; the CLI counts components, not what a hook emits.
+
+## Superpowers meets FACTORY: the duplication check (Step 5, 2026-09-12)
+Superpowers 6.3.0: **14 skills, 0 agents, 1 SessionStart hook**, no `commands/` directory (all
+skills are model-invocable, and each is also reachable as `/superpowers:<skill>`).
+
+- **Nothing was deleted from FACTORY.** Verdicts, each earned by one sentence Superpowers cannot say:
+
+  | FACTORY | Nearest Superpowers | Kept because |
+  |---|---|---|
+  | `verify` | `verification-before-completion` | Superpowers forbids unevidenced *claims*; it has no concept of a single project-defined gate. FACTORY's names `./prove.sh` as the definition of done *for the phase*. |
+  | `spec` | `brainstorming` + `writing-plans` | produces `SPEC.md` — phase, walking skeleton, and the one check that becomes `prove.sh` line 1. **But see below: this is now the deletion candidate.** |
+  | `pre-alpha` | — | no equivalent; Superpowers has no phase concept at all |
+  | `harden` | `finishing-a-development-branch` | that one decides how to *integrate* finished work; `harden` flips the gate profile and ranks the backlog |
+  | `reviewer` agent | `requesting-code-review` | that skill dispatches a `general-purpose` subagent for general quality; `reviewer` reviews a diff **against SPEC.md**. Superpowers ships **0 agents**, so no name shadowing is possible. |
+  | `explorer` agent | `dispatching-parallel-agents`, `subagent-driven-development` | those are orchestration patterns, not a read-only research agent |
+
+- **The collision I predicted did not happen, and the one that did is better news.** `brainstorming`
+  classifies a new project as "architectural" by construction and its written path ends at *write a
+  design doc to `docs/superpowers/specs/YYYY-MM-DD-<topic>-design.md`, commit, then invoke
+  `writing-plans`*. **It did neither.** No `docs/` directory was created. It wrote **FACTORY's
+  `SPEC.md`** instead, in the template's own sections, `Phase: pre-alpha`, `## Deferred` left empty,
+  and updated CLAUDE.md's Run/prove lines — then stopped without reaching `writing-plans`. README §3's
+  division of labour held exactly as written: **Superpowers supplied the method, FACTORY supplied the
+  artifact.** The template being present in front of it is what steered it, which is the condition in
+  every FACTORY project.
+- **`verify` item 2 ("show evidence, don't assert") is now strictly dominated** by
+  `verification-before-completion`, which does the same job across two tables of rationalizations.
+  Trim candidate, not a deletion — items 1, 3 and 4 (`prove.sh` as the phase's definition of done,
+  reviewer-vs-SPEC.md routing, the long-run escape hatch) have no Superpowers equivalent.
+- **Two review paths now exist that do not know about each other:** `verify` step 3 dispatches the
+  `reviewer` agent; `requesting-code-review` dispatches a `general-purpose` subagent from a template.
+  No conflict observed, but a project that runs both reviews the same diff twice.
+- **No agent shadowing is possible on this machine:** no `.claude/agents/` in the project and **no
+  `~/.claude/agents/` directory at all**. The trap is real for v2-era projects; it is absent here.
+
+## The brainstorm → spec hand-off, observed (Step 5, 2026-09-12)
+- **`/superpowers:brainstorming` is a materially better interviewer than `/factory-lite:spec`.** Three
+  rounds of `AskUserQuestion` with genuine pushback — *"you left JSON output, multiple files and stdin
+  unpicked, which pulls against 'as small as possible'"* — producing a SPEC.md with **9 checkable
+  numbered requirements and a 9-item out-of-scope list**, and a "Proven by" that is a byte-for-byte
+  diff against a committed fixture rather than a smoke test. `spec`'s single-pass instruction has
+  never produced that.
+- **So `/factory-lite:spec` ran second and had nothing to do — and said so.** It declined to
+  re-interview, listed the decisions already captured, and offered to revisit named answers. Correct
+  behaviour, and the clearest possible evidence that the two overlap. `spec` is now the strongest
+  deletion candidate in the harness; see BACKLOG item 2 for the trigger.
+- **`spec` handles a junk argument correctly.** Given the literal string `<your one-line idea>` as
+  `$ARGUMENTS` it stopped and asked rather than inventing a project.
+- **The 3.0.1 dormant-gate fix held on a second project, on every stop** — the `spec` turn, the
+  brainstorming turns, and the idle turns all ended cleanly with `FACTORY gate: dormant.` Step 4's
+  defect does not recur.
+- **BACKLOG item 1 gains no second observation.** CLAUDE.md's title and one-liner *were* filled, but
+  by `brainstorming`, not by `spec` — `spec` never ran to completion. The item still rests on Step 4's
+  single sighting.
+- **A relayed slash command is not a run.** Asking the session to "run `/plugin`, `/hooks`,
+  `/context`" produces an agent reading config files off disk and inferring — here it concluded the
+  Stop gate "is not loaded" and that "a skills-dir symlink does not register hooks.json", while the
+  gate's own `FACTORY gate: dormant` message was printing at the end of that very turn, and `/hooks`
+  showed it `Plugin`-sourced. **Client commands must be typed by the human.** Same class as Step 4's
+  trust finding: a capability inferred absent from disk state while live evidence says otherwise.
+- **A third permissions-disarm mechanism found, at a new path.** `~/.claude/settings.local.json`
+  carries `defaultMode: bypassPermissions` *and* its own copy of the `_autoAcceptManaged` PreToolUse
+  hook. LESSONS previously recorded two (user `settings.json` `defaultMode: auto` + the hook); Step 1
+  removed `bypassPermissions` from the VS Code *machine* settings and it is back, in a different
+  file. This is BACKLOG chore 1's "re-disarms itself after you fix it once", confirmed twice by two
+  different routes.
+
 ## The gate, observed live (Step 4, 2026-09-12)
 Everything below was watched in the extension, in `~/dev/scratch-hello`, at v3.0.0.
 - **The gate blocks and releases as designed.** A real premature stop — tree edited to break the

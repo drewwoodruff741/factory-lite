@@ -64,7 +64,9 @@ Hard constraints:
   `claude plugin validate .` and friends are fine because they print and exit.
 - Environment already verified in Step 1, do not re-check: git 2.53.0, bash 5.3.9, jq 1.8.1,
   node v22.22.1, gh 2.46.0 (logged in as drewwoodruff741), claude 2.1.269, core.autocrlf=input,
-  core.eol=lf, .gitattributes pins LF. Empty-folder /context baseline is 32.3k of a 1M window.
+  core.eol=lf, .gitattributes pins LF. Empty-folder /context baseline is 32.3k of a 1M window —
+  but see Step 5: the /context **Total** cannot be differenced, because `system tools` swings
+  ±2.8k on its own. Price the harness by summing the buckets you control.
   Two extension quirks: /context prints no path line, and a folder needs at least one file in it
   before the extension will open a session there.
 - Step 2 is done, do not redo any of it: v2 (drewwoodruff741/factory) is tagged v2-final and
@@ -84,10 +86,9 @@ Hard constraints:
 - Step 4 is done, do not redo any of it. The gate was watched live in the extension: three
   consecutive blocks on a premature stop, the 3-strike loop-guard release, and clean stops on a
   green tree. It also refused, three times, to weaken its own check when told to make the problem
-  go away — the behavioural result Step 2 said to look for. Numbers: v3 startup is 34.7k, i.e.
-  +2.4k above the 32.3k floor, against v2's ~10.5k; the plugin's own share is ~560 tok, and ~1.9k
-  of that 2.4k is an unexplained system-tools delta that is probably not ours (LESSONS.md has the
-  breakdown). The harness is now v3.0.1, tagged and pushed: the Stop gate is dormant while
+  go away — the behavioural result Step 2 said to look for. Numbers: v3 startup measured 34.7k.
+  **Step 5 corrected this: the "+2.4k above the floor" was mostly system-tools noise, not v3.**
+  v3's real cost is the ~560 tok Step 4 already identified (agents 156 + memory 300 + skills ~100). The harness is now v3.0.1, tagged and pushed: the Stop gate is dormant while
   `prove.sh` still holds the template TODO, because gating on it blocked the very first turn of a
   fresh project, `/factory-lite:spec` included. Three interface facts worth keeping: the CLI and
   the extension keep separate trust records, so a CLI "workspace not trusted" warning says nothing
@@ -95,6 +96,20 @@ Hard constraints:
   the folder is CLI-trusted (it reports ~377 tok always-on for factory-lite), which supersedes
   Step 3's note that no pre-install token read exists; and a slash command typed in the window open
   on the harness repo returns "Unknown command" because no plugin is loaded there.
+- Step 5 is done, do not redo any of it. Superpowers 6.3.0 is installed at **project** scope from
+  `claude-plugins-official` (14 skills, 0 agents, 1 SessionStart hook, no `commands/` dir — each
+  skill is also reachable as `/superpowers:<skill>`). Costs, by the corrected method: **factory-lite
+  ~560 tok, Superpowers ~2.1k, combined ~2.7k against v2's ~10.5k — a pass at about a quarter.**
+  Superpowers' 2.1k is ~0.8k of skill descriptions plus a **~1.3k SessionStart bootstrap that
+  re-injects on every `/clear`** and that `claude plugin details` wrongly calls "no model context
+  cost". **Nothing in FACTORY was deleted** — the duplication verdicts are in LESSONS.md — but
+  `superpowers:brainstorming` wrote a better `SPEC.md` than `/factory-lite:spec` does, unprompted,
+  and never produced its own competing design doc, so `spec` is now BACKLOG item 2, the deletion
+  candidate, with Step 7 as the trigger. Do not re-run the duplication check or re-price the
+  plugins. Two interface facts: client commands (`/context`, `/plugin`, `/hooks`) **must be typed
+  by the human** — an agent asked to run them reads config off disk and infers wrongly; and
+  `~/.claude/settings.local.json` holds a *third* permissions-disarm path (`bypassPermissions` plus
+  the auto-accept hook), so Step 1's fix did not hold.
 - The scaffold lives at ~/dev/factory-lite (the repo root is both the plugin and its marketplace).
   Layout: .claude-plugin/{plugin,marketplace}.json · hooks/{hooks.json,stop-gate.sh} ·
   skills/{pre-alpha,verify,spec,harden}/SKILL.md · agents/{explorer,reviewer}.md ·
@@ -256,7 +271,7 @@ because nothing was installed yet.
 
 ---
 
-## [ ] Step 5: Superpowers installed and scoped (≈ 30 min)
+## [x] Step 5: Superpowers installed and scoped (≈ 30 min)
 
 **Goal:** Superpowers is installed where it belongs and nothing in FACTORY duplicates it.
 
@@ -285,19 +300,38 @@ FACTORY has no skill whose name resembles a Superpowers skill and the test proje
 
 **Goal:** a brand-new folder gets the harness from GitHub with no manual copying except `init.sh`.
 
-**Bring to the session:** the Context block.
+**Bring to the session:** the Context block. Note that every test in this step is of the
+`factory-lite@factory` **marketplace** path — Steps 4 and 5 only ever proved `@skills-dir`, which
+is the testing mechanism, not the shipping one. This is the first time the pin itself is exercised.
 
-**The session produces:** the test (empty folder → `init.sh` → open in VS Code → `/plugin` shows
-`factory-lite@factory` enabled because `settings.json` asked for it), the fallback if the pin
-doesn't resolve (Customize → Plugins → add marketplace `<your-user>/factory-lite` → install
-`factory-lite`, project scope), and a five-line release rule to paste at the top of BACKLOG.md:
-smoke test → bump `version` in `plugin.json` → tag → push → projects update via Customize →
-Plugins (or `claude plugin update factory-lite@factory` in the integrated terminal).
+**The session produces:** the test (empty folder → `init.sh` → open in VS Code → **you type**
+`/plugin` and see `factory-lite@factory` enabled because `settings.json` asked for it), the
+fallback if the pin doesn't resolve (Customize → Plugins → add marketplace
+`drewwoodruff741/factory-lite` → install `factory-lite`, project scope), and a release rule to
+paste at the top of BACKLOG.md.
 
-**Done when:** the pin works from GitHub and the release rule is written down.
+**The release rule must say all of this, not a shortened version of it** (Steps 3–5 each found a
+piece the short version omits):
+1. `bash scripts/harness-smoke.sh` → `harness smoke: PASS`
+2. all four validate calls — `claude plugin validate .` covers only the *marketplace* manifest;
+   the plugin manifest and components need `... validate .claude-plugin/plugin.json --strict`,
+   `... validate skills --strict`, `... validate agents --strict`
+3. bump `version` in **BOTH** `.claude-plugin/plugin.json` **and** `.claude-plugin/marketplace.json`
+   — bumping one leaves the two disagreeing about what the release is
+4. commit, `git tag vX.Y.Z`, `git push && git push --tags`
+5. projects update via Customize → Plugins (or `claude plugin update factory-lite@factory`)
+
+**Also decide in this step, deliberately deferred from Step 5:** whether
+`template/.claude/settings.json` should pin `superpowers@claude-plugins-official` alongside
+`factory-lite@factory`, so every new project gets both. Step 5 proved the cost is affordable
+(~2.1k, mostly a SessionStart bootstrap re-paid on each `/clear`) and that the two do not collide.
+The open question is only whether every project should pay it by default or opt in per project.
+
+**Done when:** the pin works from GitHub, the release rule is written down, and the Superpowers-in-
+the-template question has an answer either way.
 
 **Guardrails:** don't set up stable/latest channels yet; one tag is enough until a second project
-exists.
+exists. Don't bump the version in this step unless something actually breaks.
 
 ---
 
