@@ -280,6 +280,80 @@ this where the rule is read.
   declarative pin: a declarative pin that half-works fails quietly, and a project would run its
   whole pre-alpha with no proof gate and no indication it was missing.
 
+## Before Step 7: chore 1's owner found, and how to count the gate (2026-09-12)
+
+Recorded *before* Step 7 executes, from reading the machine rather than running the step. Nothing
+here is a Step 7 result; Step 7's own findings get their own section.
+
+### The auto-accept owner: one extension, four paths, rewritten on every startup
+
+**`tjcg.auto-accept-claude-code` v0.5.0 owns all four permission-disarm paths.** Not three separate
+mechanisms that happen to coexist, as Steps 1, 4 and 5 each concluded in turn — one extension,
+writing all of them, on every activation (`onStartupFinished`):
+
+| Path | What it writes |
+|---|---|
+| `~/.vscode-server/data/Machine/settings.json` | `initialPermissionMode: bypassPermissions` + `allowDangerouslySkipPermissions: true`, into **both** the `claudeCode` and `claude-code` config sections, at `ConfigurationTarget.Global` |
+| `~/.claude/settings.local.json` | `defaultMode: bypassPermissions`, a 15-entry blanket allow list (`Bash(*)`, `Edit`, `Write`, `mcp__*`, …), its own copy of the hook, `__autoAcceptManaged: true` |
+| `~/.claude/settings.json` | `PreToolUse` matcher `""` -> the hook, `_autoAcceptManaged: true` |
+| `~/.claude/hooks/auto-accept-hook.sh` | the script itself: reads stdin, ignores it, returns `permissionDecision: allow` for every call |
+
+**This is why Step 1's fix did not hold, and the lesson is about the shape of the problem, not the
+files.** Step 1 removed `bypassPermissions` from the machine settings by hand and it came back.
+Step 5 found `settings.local.json` and called it "a third path". Both were chasing outputs. The
+finding that ends it is the **owner**: while the extension is enabled, hand-editing any of those
+four rows is undone at the next window start. Generalisation worth keeping: **when a setting
+re-appears after you remove it, stop fixing the file and find what writes it** — `grep -rl` over
+`~/.vscode-server/extensions` located it in one call.
+
+**The extension ships a real teardown, and it is still not trusted.** Its disable path deletes the
+hook script, filters `_autoAcceptManaged` entries out of both settings files, and restores the two
+VS Code keys. But the restore reads a **snapshot taken at activation time**, and on this machine
+that snapshot was almost certainly taken with `bypassPermissions` already in place — so the
+"restore" can write the bad value back. A teardown that restores from a snapshot of an
+already-broken state is not a fix. Verify all five rows afterwards against a backup.
+
+**`permissions.defaultMode: "auto"` in `~/.claude/settings.json` is NOT extension-owned** — it
+carries no managed marker, so the teardown leaves it. It is also **not inert**: `auto` is a real
+permission mode at 2.1.269. The CLI binary's own enum is
+`default | acceptEdits | plan | auto | bypassPermissions`, and it carries the string *"Maps to
+`defaultMode: auto`, which repo-level settings cannot grant in Claude Code"* — so user scope can
+grant it and project scope cannot, which is precisely why a project's `settings.json` could never
+have overridden it. That row needs a hand edit, and unlike the other four it will stay fixed.
+
+### Three facts about the gate that decide how its delete-when is measured
+
+README's delete-when for the Stop gate is *"passes first time on >95% of stops"*. Read
+`stop-gate.sh` before counting, because "stops" is not what it sounds like.
+
+- **Chat-only turns never reach `prove.sh`.** The gate hashes HEAD + staged/unstaged diff +
+  untracked non-ignored file contents, and exits 0 without running the check when that hash matches
+  the last PASS. So the denominator is **stops where the gate actually ran**, i.e. stops after a
+  tree change. Counting every stop would inflate the ratio toward 95% with conversation and retire
+  the gate on the strength of chatter.
+- **Untracked, non-ignored files are in the hash.** A project that writes its own data into its
+  working directory — a log file, a SQLite database, a cache — changes the tree on every run, so
+  the gate re-runs `prove.sh` on every turn until those paths are gitignored. This is the gate
+  behaving correctly and being useless at the same time.
+- **In a non-repo the gate never skips.** The fallback state is `nogit-$(date +%s)`, which can
+  never match the stored marker. `git init` before the first session, not after.
+
+### Toolchain present on this machine (checked 2026-09-12, extends Step 1's list)
+
+`uv 0.12.9` · `ruff 0.16.6` · `python3 3.13.15` · stdlib `sqlite3 3.53.1` · `corepack` present ·
+**`pnpm` absent** · **`pytest` not on PATH**. So a Python project can reach a walking skeleton with
+no install step and no dependencies, and a TypeScript one cannot. `pytest`'s absence does not
+matter in pre-alpha, where the definition of done is one check in `prove.sh`; it is a Step 8
+question.
+
+### No scaffold defect found
+
+Said plainly so that silence is not read as a clean bill of health nobody checked for: the scaffold
+was read end to end while writing the Step 7 sub-guide and **nothing in it was found to be wrong**.
+`harness-smoke.sh` prints `harness smoke: PASS` and all four validate calls pass at v3.1.0. Steps
+4, 5 and 6 each found a real defect at this point in the step; this one did not, and that is a
+result rather than an omission.
+
 ## What bit us
 Format: what happened → what it cost → what it taught.
 - **Over-engineering by accretion.** v2 was built for one specific task, branched into a factory,

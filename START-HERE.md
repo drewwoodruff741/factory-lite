@@ -363,6 +363,29 @@ go to FACTORY's `BACKLOG.md`, neither gets built mid-project.
 **Done when:** `./prove.sh` passes on the skeleton and a human can run it with the one command in
 CLAUDE.md.
 
+> **Prepared 2026-09-12, before the step runs.** The sub-guide is written and committed:
+> `docs/subguides/step-7.md`. Three things are already decided so the fresh session does not
+> re-open them:
+> - **The idea:** a nutrition and fitness tool — log intake (calories, macros, micros), track body
+>   measurements over time, later recommend workouts from equipment + goal + recovery, and
+>   eventually coach rather than record. The last clause is the most attractive thing in the
+>   sentence and is temptation #1 on the sealed out-of-scope list in §5e; it is v2's failure mode
+>   in new clothes, because a system that improves itself is an architecture and there is nothing
+>   working yet for it to improve.
+> - **The language: Python** (uv, ruff, pytest). `uv 0.12.9`, `ruff 0.16.6`, `python3 3.13.15` and
+>   stdlib `sqlite3 3.53.1` are already on this machine, so the skeleton needs no install step and
+>   no dependencies. `pnpm` is absent, so TypeScript would put a corepack bootstrap in front of the
+>   first line of code.
+> - **Chore 1 is diagnosed but not executed.** One extension owns all four disarm paths
+>   (`tjcg.auto-accept-claude-code` 0.5.0) — see BACKLOG chore 1. §1 of the sub-guide runs it first,
+>   and it costs a VS Code extension-host restart, which kills the session that asks for it. That is
+>   why the sub-guide was written and committed first.
+>
+> Two observations are **pre-registered** in the sub-guide so they cannot be scored to taste after
+> the fact: §5c is an eight-row scorecard for BACKLOG item 2 (does `superpowers:brainstorming` write
+> a correct `SPEC.md` unprompted, allowed to reach its own end this time), and §8 is the gate-block
+> tally for the Stop gate's own delete-when. Neither is decided here.
+
 **Guardrails:** no new hooks, agents, rules, plugins, or MCP servers during this step. Not one.
 Before starting, clear BACKLOG.md's "Environment chores" — chore 1 especially: machine-wide
 auto-accept makes every permission rule on this machine inert, including the one the template

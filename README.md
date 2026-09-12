@@ -43,11 +43,19 @@ about the model it encodes, what evidence motivated it, and when to delete it**.
 
 | Piece | Assumption it encodes | Delete when |
 |---|---|---|
-| Stop gate (`prove.sh`) | Claude sometimes stops before the check passes | it passes first time >95% of stops |
+| Stop gate (`prove.sh`) | Claude sometimes stops before the check passes | it passes first time on >95% of the stops **where the gate actually ran** — see below |
 | `pre-alpha` skill | Claude over-abstracts before there's a working slice | `/doctor` says it's redundant or a model release fixes it |
 | `reviewer` agent | the agent that wrote the code grades itself generously | never, cheap and still recommended by Anthropic |
 | `explorer` agent | research bloats the main context | never, same reason |
 | `spec` + `harden` commands | phase changes need a deliberate ritual | you stop skipping them |
+
+**Reading the Stop gate's delete-when.** "Stops" is not every stop. The gate hashes the tree
+(HEAD + staged/unstaged diff + untracked non-ignored file contents) and exits 0 without running
+`prove.sh` when nothing has changed since the last PASS, so chat-only turns never reach the check
+and must not be counted as passes — doing so inflates the ratio toward 95% with conversation and
+retires the gate on the strength of chatter. Count only stops after a tree change. In a non-repo
+the gate never skips at all (the fallback state can never match), which is one more reason to
+`git init` before the first session.
 
 What is **not** here on purpose: role-play agents (architect, PM, QA…), always-on rules, a
 formatter hook, memory/work-record machinery, model-routing, security scanning as a hook.

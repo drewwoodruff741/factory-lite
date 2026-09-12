@@ -75,21 +75,45 @@ Format per item:
 Noted in Step 4, deliberately deferred. None of these is a FACTORY component; they are machine
 settings that change what the harness can be trusted to prove.
 
-1. **Turn off machine-wide auto-accept.** `~/.claude/settings.json` has
-   `permissions.defaultMode: "auto"` plus an `_autoAcceptManaged` `PreToolUse` hook that allows
-   every tool call unconditionally. **Step 5 found a third path:**
-   `~/.claude/settings.local.json` carries `defaultMode: bypassPermissions` *and* its own copy of
-   that same hook — so the `bypassPermissions` Step 1 removed from the VS Code machine settings is
-   back, in a different file. Fixing one path does not fix the others. An extension owns that hook and will rewrite the file, so
-   disable the extension in VS Code rather than hand-editing. **Deadline: before Step 7**, the
-   first real project — harness work is cheap to get wrong, a real project is not. Until then,
-   the template's permissions block is inert and no permission rule on this machine is testable.
+1. **Turn off machine-wide auto-accept.** **Owner identified 2026-09-12, before Step 7:
+   `tjcg.auto-accept-claude-code` v0.5.0.** It is not three separate mechanisms, as Steps 1, 4 and
+   5 each concluded in turn — it is **one VS Code extension writing all four paths on every
+   activation** (`onStartupFinished`):
+   - `~/.vscode-server/data/Machine/settings.json`: `initialPermissionMode: bypassPermissions` +
+     `allowDangerouslySkipPermissions: true`, in **both** the `claudeCode` and `claude-code`
+     sections, at `ConfigurationTarget.Global`. **This is why Step 1's hand fix came back.**
+   - `~/.claude/settings.local.json`: `defaultMode: bypassPermissions`, a 15-entry blanket allow
+     list, its own copy of the hook, `__autoAcceptManaged: true`. (Step 5's "third path".)
+   - `~/.claude/settings.json`: `PreToolUse` matcher `""` -> the hook, `_autoAcceptManaged: true`.
+   - `~/.claude/hooks/auto-accept-hook.sh`: allows every call unconditionally, ignoring its input.
+
+   **The fix is to disable the extension, and then to verify — not to trust its teardown.** It does
+   ship one (delete the hook, filter the managed entries, restore the VS Code keys), but the restore
+   reads a snapshot taken at *activation* time, which on this machine was taken with
+   `bypassPermissions` already set. A teardown that restores a snapshot of an already-broken state
+   can put the bad value straight back.
+
+   **One row is not the extension's and needs a hand edit:** `permissions.defaultMode: "auto"` in
+   `~/.claude/settings.json`. It carries no managed marker, so the teardown leaves it, and it is
+   **not** inert — `auto` is a real mode at 2.1.269 (the CLI enum is
+   `default | acceptEdits | plan | auto | bypassPermissions`, and the binary carries *"Maps to
+   `defaultMode: auto`, which repo-level settings cannot grant in Claude Code"*, i.e. user scope can
+   grant it and a project cannot override it). Unlike the other four, once removed it stays removed.
+
+   The procedure, the five-row verification and the `/hooks` check that closes it are in
+   `docs/subguides/step-7.md` §1. **Deadline: before Step 7**, the first real project — harness work
+   is cheap to get wrong, a real project is not. Until it is done, the template's permissions block
+   is inert and no permission rule on this machine is testable.
+   **Status: diagnosed, not yet executed** — §1 runs at the top of Step 7, and it costs a VS Code
+   extension-host restart, so it kills whatever session asks for it.
+
 2. **Delete `~/dev/.claude/settings.local.json`.** Stale leftover from Step 0, when `~/dev` was
    briefly its own project: it references a Desktop zip and a `~/dev/.git` that no longer exists.
    Whether a parent directory's local settings reach a child project is unverified (see chore 1 —
    it cannot be tested while auto-accept is on), and the file can only ever *grant*, so deleting
    is strictly safer either way.
-3. **Prune `~/dev/factory-lite/.claude/settings.local.json`.** Two entries this build wrote and
+3. **Prune `~/dev/factory-lite/.claude/settings.local.json`.** (Chores 2 and 3 are done in the
+   same pass as chore 1 — see `docs/subguides/step-7.md` §1c.) Two entries this build wrote and
    nothing needs: `Bash(rm -rf /home/drew/dev/scratch-hello *)`, pointing at a project that no
    longer exists, and `Bash(claude config *)`, granted for a call that turned out not to be a
    subcommand at all.
@@ -109,6 +133,9 @@ settings that change what the harness can be trusted to prove.
 - **Status:** waiting (one project's evidence; a second confirms it is the skill and not a fluke).
   **In tension with item 2** — if `spec` is deleted, this item dies with it. Step 5 produced no
   second sighting: CLAUDE.md's title *was* filled, but by `brainstorming`, not by `spec`.
+  **Step 7 carries a free probe for this** as row 8 of the scorecard in `docs/subguides/step-7.md`
+  §5c: whether the title and one-liner get filled, and *by which skill*. Costs nothing to observe
+  and settles whether this item survives item 2.
 
 ### 2. Delete `/factory-lite:spec` — Superpowers' brainstorming does the job better
 - **Wish:** remove `skills/spec/SKILL.md` from the plugin and let `superpowers:brainstorming` write
@@ -130,6 +157,14 @@ settings that change what the harness can be trusted to prove.
 - **Status:** waiting (one project's evidence). Counter-argument to weigh at Step 7: `spec` costs
   ~50 tok always-on, is command-only, and is the only guarantee the artifact gets written in a
   project where Superpowers is not installed.
+- **The bar is fixed in advance, before the observation runs** — `docs/subguides/step-7.md` §5c is
+  an eight-row scorecard written before Step 7 executes, precisely so the result cannot be scored
+  to taste afterwards. Two conditions in it matter most: brainstorming is invoked with **no
+  mention of `SPEC.md`** (the claim is that it writes it unprompted, so one nudge voids the run),
+  and it is **allowed to reach its own end** rather than being stopped after the CLAUDE.md edit as
+  in Step 5 — that is the open caveat this step exists to close. If it fires, the deletion is a
+  separate act under the release rule, *after* the project's pre-alpha ships, because `main` is
+  production and this project is downstream of it.
 
 ### 3. Trim `verify` item 2 — Superpowers says it better
 - **Wish:** cut or shorten item 2 of `skills/verify/SKILL.md` ("show evidence, don't assert").
@@ -160,6 +195,12 @@ settings that change what the harness can be trusted to prove.
   to add no hook, agent or rule, and every candidate above is a change to the harness's behaviour
   that wants a real project's evidence first. Revisit after Step 7, which is the first time the
   answer matters to something other than a scratch folder.
+  **Still undecided going into Step 7, deliberately.** The step's guardrail forbids adding a hook,
+  agent or rule, and every candidate above is one. What Step 7 does instead is *collect*:
+  `docs/subguides/step-7.md` §4 makes "`/hooks` shows `Stop` carrying two hooks" a hard checkpoint
+  before any code is written, and makes it a human-typed check rather than an inferred one. If it
+  fails there — in a real project, not a scratch folder — that is the second instance this item
+  needs, and it gets an evidence line, not a decision.
 
 ### 5. `main` is production, and nothing marks the difference
 - **Wish:** some separation between "pushed" and "released" — a `release` branch, a pinned `ref` in
@@ -176,3 +217,32 @@ settings that change what the harness can be trusted to prove.
   and that reasoning still holds. The interim discipline is a habit, not a mechanism: don't push
   work in progress to `main`. Recorded so that when the habit fails, the failure is expected rather
   than surprising.
+  **As of Step 7 the hypothetical is real: there is now a project downstream of every commit.**
+  Still not decided, and deliberately so — the reasoning above is unchanged, and one project is
+  still not a second project. What changes is the cost of the habit failing, so Step 7's close-out
+  rule is explicit: prose-only commits (`README`, `LESSONS`, `BACKLOG`, `START-HERE`, `docs/`)
+  reach the marketplace clone but change no plugin component and are safe; anything under
+  `hooks/`, `skills/`, `agents/`, the manifests, `template/` or `scripts/` ships as behaviour the
+  moment it is pushed, and gets the full five-part rule or does not get pushed at all.
+
+### 6. A project's own data files make the gate re-run on every turn
+- **Wish:** something should stop a project's runtime data from being counted as a source change.
+  Candidates, none chosen and none justified yet: `init.sh` writing a starter `.gitignore`; the
+  template shipping one; a line in the template `CLAUDE.md` saying to ignore data paths on day one;
+  or nothing at all, because this is the project's job and not the harness's.
+- **Assumption it encodes:** that a gate which fires on every turn gets ignored, and an ignored gate
+  is worse than an absent one because it still costs the time.
+- **Evidence:** **none observed — this is a prediction, recorded so it can be checked rather than
+  rediscovered.** The mechanism is read from `hooks/stop-gate.sh`, not guessed: the tree state it
+  hashes is HEAD + staged/unstaged diff + the contents of untracked **non-ignored** files. So any
+  project that writes its own data into its working directory — a log, a SQLite file, a cache —
+  changes that hash on every run and never hits the "nothing changed since the last PASS" skip. Step
+  7's project (a food and measurement log) is the first FACTORY project that will actually do this;
+  Steps 4, 5 and 6 used scratch projects that wrote nothing. `docs/subguides/step-7.md` §3 has that
+  project gitignore its data file on day one, which means **Step 7 will most likely produce no
+  evidence for this item either way** — the right trade, since the alternative is letting a real
+  project run noisily to prove a point.
+- **Delete when:** n/a until something is chosen.
+- **Status:** waiting, on **zero** observations. Explicitly **not** to be built on the strength of
+  the prediction above — that is the accretion failure mode LESSONS records for v2, where every
+  addition sounded good on paper. It needs a project that actually got bitten.
