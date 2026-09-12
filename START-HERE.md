@@ -326,6 +326,10 @@ piece the short version omits):
 `factory-lite@factory`, so every new project gets both. Step 5 proved the cost is affordable
 (~2.1k, mostly a SessionStart bootstrap re-paid on each `/clear`) and that the two do not collide.
 The open question is only whether every project should pay it by default or opt in per project.
+Cheap either way: the plugin is already cached machine-wide at
+`~/.claude/plugins/cache/claude-plugins-official/superpowers/6.3.0` (pinned to sha `b36e082`), so
+a template pin only flips the per-project enable — no re-download. Note the Step 5 scratch project
+was deleted, so `installed_plugins.json` still carries a `projectPath` to a folder that is gone.
 
 **Done when:** the pin works from GitHub, the release rule is written down, and the Superpowers-in-
 the-template question has an answer either way.

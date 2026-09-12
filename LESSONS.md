@@ -75,6 +75,14 @@ Fresh session in `~/dev/scratch-super`, template's four files, `factory-lite@ski
   (3,108 bytes) as `hookSpecificOutput.additionalContext`. Its matcher is `startup|clear|compact`,
   so **it is re-paid on every `/clear`** — and FACTORY's own runbook `/clear`s between spec and
   implementation.
+- **"Project scope" means cached machine-wide, enabled per project.** The download lands in
+  `~/.claude/plugins/cache/<marketplace>/<plugin>/<version>/` and is recorded in
+  `~/.claude/plugins/installed_plugins.json` with the project path and the pinned
+  `gitCommitSha`; only the *enable* lives in the project's `.claude/settings.json`. Deleting the
+  project removes the enable but **not** the cache or the record — after `rm -rf` the scratch
+  project, `claude plugin list` still showed `superpowers@claude-plugins-official 6.3.0 project`
+  with a `projectPath` pointing at a folder that no longer exists, status `✘ disabled`. Harmless,
+  and it means pinning Superpowers in `template/.claude/settings.json` (Step 6) costs no re-download.
 - **`claude plugin details` under-reports a context-injecting hook.** It labels that SessionStart
   hook `(harness-only — no model context cost)`. It costs ~1.3k every session. Read the hook script
   itself before trusting the projection; the CLI counts components, not what a hook emits.
