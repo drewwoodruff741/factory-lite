@@ -3,8 +3,15 @@
 #
 # Assumption this encodes: Claude will sometimes say "done" before ./prove.sh passes.
 # Evidence: every pre-alpha push where "looks done" wasn't done.
-# Delete when: a project runs to completion with this gate removed and ./prove.sh still runs
-#   before every stop. That is a removal experiment, not a tally, and it is deliberate.
+# Delete when: a project runs to completion with this HOOK removed, the `verify` skill and
+#   CLAUDE.md's verify rule left in place, and ./prove.sh still runs before every stop. A removal
+#   experiment, not a tally, and it is staged on purpose: template/CLAUDE.md ships "before stopping
+#   after a code change, run ./prove.sh" to every project, so *something* always asks besides this
+#   hook. That is not a confounder to design around, it is the question -- if the prose alone keeps
+#   the check running, the hook is the redundant component and the prose is the cheaper one that
+#   survives. What the experiment must never conclude is that neither is needed; it compares two
+#   FACTORY components, it does not test the model bare. (Named by ~/dev/coach, 2026-09-12, the
+#   first project to read this condition and notice it could not run it.)
 #   The old condition -- "prove.sh passes first time on >95% of the stops where the gate ran" --
 #   was retired at Step 9 after two projects showed it cannot be read even when counted live:
 #   a pass and an unchanged-tree skip were both a silent exit 0 (fixed below, in the PASS arm);

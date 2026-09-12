@@ -708,4 +708,27 @@ depend on.
   slightly *more* important rather than less: you control what the next install receives, not when
   it is received, so a work-in-progress push sits on `main` waiting for someone to collect it at a
   moment you will not witness. The general form: *a claim about timing needs an observation at two
-  times; one measurement can only ever establish the state, never the latency.*
+  times; one measurement can only ever establish the state, never the latency.* (Corroborated the
+  same afternoon: coach updated itself to 3.3.0 in its own session, by its own `/plugin` run —
+  which is the mechanism, arriving exactly as described.)
+- **Step 9, v3.3.1: the new delete-when was falsified by the downstream project within a day, and
+  the confounder turned out to be the question.** The Stop gate's replacement condition — "run a
+  project to completion with the gate removed and see whether `./prove.sh` still runs" — survived a
+  full `reviewer` pass on the release diff. `~/dev/coach` read it hours later and reported it could
+  not run the experiment: that session ran `./prove.sh` before every stop because **CLAUDE.md's
+  verify rule told it to**, so removing the gate would show the check still running and prove only
+  that the *rule* was doing the work. `template/CLAUDE.md:19` ships that rule to every FACTORY
+  project, so the condition was unrunnable across the harness's entire installed base, by
+  construction, from the moment it was written.
+  **The instinct — control for the confounder — was wrong, and seeing why is the lesson.** There is
+  no version of a FACTORY project where nothing but the hook asks for `prove.sh`, so "isolate the
+  gate" means deleting the harness to test the harness. Stage it instead: remove the **hook**, keep
+  the **prose**. If the check still runs, the hook is redundant and the ~50-token rule is the
+  cheaper component that survives — which is a result, not a contaminated experiment, and it is the
+  one Step 8's evidence already pointed at. The general form: *when a control cannot be isolated
+  because something else always does its job, stop calling that a confounder — name the two things
+  and ask which one you would keep.*
+  And the procedural half, which is the better news: **the first thing to test the new delete-when
+  was the project downstream of it, within a day, and it found what the release review did not.**
+  The reverse pass was designed to be run by whoever holds the harness; it turns out the projects
+  can run it too, and they are standing closer to the evidence.

@@ -44,7 +44,7 @@ and it is the half that keeps this small.
 
 | Piece | Assumption it encodes | Delete when |
 |---|---|---|
-| Stop gate (`prove.sh`) | Claude sometimes stops before the check passes | a project runs to completion with the gate **removed** and `prove.sh` still runs before every stop — see below |
+| Stop gate (`prove.sh`) | Claude sometimes stops before the check passes | a project runs to completion with the **hook** removed, the `verify` skill and CLAUDE.md's verify rule kept, and `prove.sh` still runs before every stop — see below |
 | `pre-alpha` skill | Claude over-abstracts before there's a working slice | a pre-alpha runs clean with the skill **disabled**: no abstraction, no options, no parallel planning document |
 | `reviewer` agent | the agent that wrote the code grades itself generously | two consecutive projects reach hardening with every `reviewer` pass returning no P0/P1 |
 | `verify` skill | Claude reports success from intent rather than from output | Superpowers is unpinned from the template **and** a project stops asserting done without evidence for a whole phase |
@@ -59,7 +59,17 @@ silent exit 0 (fixed in v3.3.0 — a pass now says so, the skip stays silent); t
 stops, and it collapses as sessions run in longer turns; and a gate that never fires because the
 session pre-empts it produces exactly the tally of a gate that was never installed. **Deterrence
 and absence are indistinguishable from the outside**, so every row above that could not be counted
-now names a removal experiment instead. The `spec`/`harden` row is the caution worth carrying:
+now names a removal experiment instead.
+
+**The gate's experiment is staged, and `~/dev/coach` is the reason** — it read the condition the day
+it shipped and pointed out that it could not run it. `template/CLAUDE.md` tells every project to run
+`./prove.sh` before stopping after a code change, so in any FACTORY project *something other than the
+hook* is always asking, and a naive "remove the gate and see" would retire it on evidence that only
+shows the prose was doing the work. Stage it instead: **remove the hook, keep the prose.** If the
+check still runs before every stop, the hook is the redundant component and the ~50-token rule is the
+cheaper one that survives — a real result, and the one the evidence has been pointing at since Step 8.
+The conclusion the experiment must never reach is "neither is needed": it compares two FACTORY
+components against each other, it does not test the model with nothing. The `spec`/`harden` row is the caution worth carrying:
 its old wording ("you stop skipping them") technically fired — neither command was typed in the
 one real project — while both rituals were performed anyway, one of them by reading the skill file
 as a document. *Measure the artifact, not the invocation.* (`verify` had no row at all until Step 9

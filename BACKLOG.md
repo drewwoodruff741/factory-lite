@@ -659,6 +659,24 @@ evidence has told you something, and five of them had.
      times across two projects and one audit. The gate now says `FACTORY gate: ./prove.sh passed.`
      after a real run and stays silent on the unchanged-tree skip; `scripts/harness-smoke.sh`
      asserts both, and both assertions were watched failing on a deliberately broken gate first.
+- **Refined in v3.3.1, hours after shipping, by the project it shipped to.** `~/dev/coach` read the
+  new delete-when and reported that it could not run it: that session pre-ran `./prove.sh` before
+  every stop because **CLAUDE.md's verify rule says to**, so removing the gate would show the check
+  still running and prove only that the rule was doing the work. Checking the claim rather than
+  taking it: `template/CLAUDE.md:19` ships exactly that line to **every** FACTORY project, so this
+  is structural, not a quirk of coach — the experiment as written was nearly unrunnable anywhere in
+  the harness's own installed base.
+  **The fix is to stage it rather than to design around it, because the confounder is the question.**
+  Remove the **hook**, keep the `verify` skill and the CLAUDE.md rule. If the check still runs before
+  every stop, the hook is the redundant component and the ~50-token prose rule is the cheaper one
+  that survives — which is a genuine result, and the one Step 8's evidence has been pointing at all
+  along ("if the harness is ever trimmed, trim toward keeping the cheap review and re-examining the
+  always-on hook"). The guard rail on it: the experiment compares **two FACTORY components against
+  each other** and never tests the model bare, so "neither is needed" is a conclusion it cannot
+  support.
+  Worth noting what just happened procedurally: the first thing to test the new delete-when was the
+  downstream project, within a day, and it found a defect the release review did not. That is the
+  maintenance loop running in the direction it was built to run.
 - **What is deliberately left unsolved:** the ratio. Not because it is hard to instrument but
   because it does not answer the question it was written for. The residue is a fact about the
   component rather than a defect in the item — **retiring this gate will cost a deliberate
