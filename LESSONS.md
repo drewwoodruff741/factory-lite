@@ -446,3 +446,18 @@ depend on.
   present, so the teardown faithfully wrote `bypassPermissions` back. **A restore is only as good
   as the state it snapshotted.** Snapshot before the teardown and diff after; the row that survives
   is the one nobody predicted, unless you predicted it.
+- **Step 7:** "nothing prompted me" is **not** evidence that permissions are disarmed. Immediately
+  after chore 1, §0.6 predicted that `init.sh` would raise dialogs; four Bash calls went out and the
+  human reported all four as silent, which is the sub-guide's stop condition. Every one of the five
+  disarm rows was in fact clean, and a grep for `bypassPermissions|defaultMode|allowDangerouslySkip`
+  across all Claude config returned zero. Three of the four calls were read-only (`ls`, `cat`,
+  `grep`, `git ls-files`) and ran **sandboxed**, which never prompts and is correct behaviour; the
+  fourth had prompted and been granted *always*, which is why it also looked silent on the calls
+  after it. Two things settled it, and both are cheap: the allowlist file's **mtime matched the
+  install to the second** and its new last entry was the exact command — a grant can only be written
+  by an approved dialog, since bypass mode records nothing — and then a deliberate **write probe**
+  (`touch` into the project, unsandboxable and unallowlisted) raised a dialog on demand. The general
+  form: *absence of a prompt is ambiguous, so test a disarm claim with an action that must prompt,
+  and read the allowlist's mtime — grants are evidence that permissions were live.* Also: tell the
+  human to answer such a probe **Yes**, not **Always**, or the probe silently pollutes the allowlist
+  and cannot be repeated.
