@@ -812,3 +812,29 @@ measurement.**
   and "not yet running the version that would have told you".** Instrumentation moves the ambiguity;
   it does not abolish it. Worth knowing before trusting any first-sighting-of-a-new-signal as
   evidence about the signal.
+- **Close-out: a shipped component may carry the finding, but not the project's name.** An audit for
+  "coach residue in FACTORY" came back almost empty — every coach mention in `BACKLOG.md`,
+  `LESSONS.md` and `START-HERE.md` is *evidence provenance*, which is the convention this harness
+  runs on ("Evidence: the bug it would have prevented"). Exactly one place was genuine residue, and
+  it was the one that ships: `hooks/stop-gate.sh`'s header named `~/dev/coach` and proposed an
+  experiment *on that project* — inside a file every future project receives. The split that
+  resolves it: **the record names the project, the component states the finding.** A component that
+  names another project is telling its reader about someone else's backlog, and there is no version
+  of that which is useful to them.
+  The same audit caught a second thing, which is the more common failure: **the component and the
+  record disagreed.** The gate's header still said the removal experiment was "deliberately not
+  being run" a day after it had been run, because correcting prose is a free commit and correcting a
+  component is a release — so the prose moved and the component did not. That is Step 7's
+  two-definitions failure exactly, in the file with the strongest claim to being authoritative.
+  *When a decision is recorded in two places and one of them costs more to update, that is the one
+  that goes stale; check it first, not last.*
+- **Close-out: "the framework may not require, the owner may always choose" — and the rule survived
+  being overruled the same day it was written.** The close-out declared the gate kept by decision
+  rather than evidence, on the reasoning that a harness in maintenance should not degrade its one
+  working project to study itself. Drew reversed it within hours and ran the experiment, and the
+  result was worth having — the prose alone kept `./prove.sh` running, so the gate now stands on one
+  run's worth of evidence instead of none. Both halves are left in the record on purpose. The rule
+  was never "nobody may run experiments on the project"; it is that **the harness may not require a
+  project to change on its behalf**, which is a constraint on the framework, not on the person who
+  owns both. A rule that cannot distinguish a demand from a decision would have forbidden the most
+  useful thing that happened that day.

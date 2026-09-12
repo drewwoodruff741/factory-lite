@@ -196,11 +196,15 @@ They are marked so that a future reader does not mistake "shipped" for "confirme
 | Stop at `brainstorming`'s architectural step 5; SPEC.md is the only planning artifact | `skills/pre-alpha/SKILL.md` | applies at spec time; no spec time remains | a new project's first session |
 | ~~The gate's removal experiment (remove the hook, keep the prose)~~ **RUN 2026-09-12** | `hooks/stop-gate.sh` header, `README.md` §1 | ~~needs a project willing to drop its safety net for a phase~~ | done: coach, hardening item 4 — see item 7 |
 
-**The Stop gate is therefore kept by decision, not by evidence, and that is written down on
-purpose.** Its delete-when is runnable — on coach, on one hardening item, at the cost of a phase
-without the net — and the judgement here is that a harness in maintenance should not degrade its one
-working project to study itself. Whoever picks this up later gets the experiment, the reasoning, and
-an honest label instead of a condition quietly rotting into permanence.
+**The Stop gate was kept by decision on 2026-09-12 and then, the same day, kept on evidence
+instead.** The close-out judgement here was that a harness in maintenance should not degrade its one
+working project to study itself; Drew reversed it, the experiment ran on a hardening item, and the
+gate survived it — see item 7 for the result and for what the result cannot support. Both halves are
+left standing on purpose: the reasoning for *not* running it was honest when written, and being
+overruled by the owner is how it should have gone. **The distinction that matters is in the boundary
+section above: a framework may not *require* a project to change on its behalf; an owner may always
+choose to.** The first is the harness feeding on its consumer; the second is a decision. Only one of
+them is a rule.
 
 ## Decided in Step 6: the template pins both plugins
 

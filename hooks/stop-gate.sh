@@ -10,12 +10,18 @@
 #   hook. That is not a confounder to design around, it is the question -- if the prose alone keeps
 #   the check running, the hook is the redundant component and the prose is the cheaper one that
 #   survives. What the experiment must never conclude is that neither is needed; it compares two
-#   FACTORY components, it does not test the model bare. (Named by ~/dev/coach, 2026-09-12, the
-#   first project to read this condition and notice it could not run it.)
-#   Close-out status, 2026-09-12: this gate is KEPT BY DECISION, not by evidence. The experiment
-#   above is runnable -- on coach, on one hardening item -- and the judgement is that a harness in
-#   maintenance should not degrade its one working project to study itself. Labelled rather than
-#   left to rot into permanence, which is what an unrunnable delete-when becomes.
+#   FACTORY components, it does not test the model bare.
+#   RUN ONCE, 2026-09-12, on a real project's hardening item, and this gate survived it:
+#   ./prove.sh ran before every stop with this hook removed and the prose left in place, so the
+#   prose alone kept the check running. That is one data point and not a demonstration -- two stops
+#   is not a sample, and the session knew it was being measured -- so the hook stays, now on one
+#   run's worth of evidence instead of none. Full record in BACKLOG.md item 7.
+#   HOW to run it, because no other document says so and two of the three obvious ways are invalid
+#   against the "keep the prose" clause above: uninstalling the plugin takes the `verify` skill with
+#   it; a project-scope enabledPlugins entry refuses uninstall outright; and the client's hook UI
+#   cannot disable a plugin-supplied hook. Empty the Stop array in this plugin's hooks/hooks.json at
+#   the project's pinned install path, and confirm with /reload-plugins reporting one hook fewer.
+#   An experiment is an instruction, and an instruction that omits its mechanism is a wish.
 #   The old condition -- "prove.sh passes first time on >95% of the stops where the gate ran" --
 #   was retired at Step 9 after two projects showed it cannot be read even when counted live:
 #   a pass and an unchanged-tree skip were both a silent exit 0 (fixed below, in the PASS arm);

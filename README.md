@@ -76,8 +76,11 @@ deliberately-not-running judgement and coach built hardening item 4 with the hoo
 prose kept. `./prove.sh` ran before every stop; the prose alone kept the check running. **That is
 one clean data point, not a demonstration** — two stops is not a sample, and the session knew it
 was being measured. The gate is still kept, and now on one run's worth of evidence rather than on
-none. Note the hook's own header still carries the pre-run "deliberately not being run" label; that
-is a component file, so correcting it needs a version bump rather than a prose commit. The `spec`/`harden` row is the caution worth carrying:
+none. The hook's header carries the same record as of v3.3.3, along with the one thing no other
+document held: **how** to remove a single plugin-supplied hook without taking the `verify` skill
+with it.
+
+The `spec`/`harden` row is the caution worth carrying:
 its old wording ("you stop skipping them") technically fired — neither command was typed in the
 one real project — while both rituals were performed anyway, one of them by reading the skill file
 as a document. *Measure the artifact, not the invocation.* (`verify` had no row at all until Step 9
