@@ -31,7 +31,16 @@ the extracted plugin copy contains `docs/step-6-prompt.md`, which does not exist
 install record writes `gitCommitSha` = `main`'s HEAD; and the version in the cache path is a label
 copied out of `plugin.json`, not a resolved ref.
 
-So **every push to `main` ships to every project**, immediately, with no tag and no release.
+So **every push to `main` ships to every project**, with no tag and no release.
+**Precision added at Step 9, by observation rather than inference — "immediately" was too strong.**
+Pushing v3.3.0 refreshed the marketplace clone at once, and `~/dev/coach`'s install record still
+read `installPath: …/cache/factory/factory-lite/3.2.0` afterwards: a project keeps running the
+cache directory its install record pins until that project is *updated* (Customize -> Plugins, or
+`claude plugin update factory-lite@factory --scope project` **from inside that project**). What a
+push controls is what the next install or update receives, which can be minutes or weeks later and
+is not something the pusher observes. The discipline is unchanged and the reason for it is slightly
+worse: you do not control *when* a project picks up what you pushed, so there is still no such
+thing as an unreleased commit on `main` — only one that has not been collected yet.
 Steps 3 and 4 above remain worth doing — the version number is what `plugin list`, the cache path
 and the install record report, so a stale one makes every diagnostic lie — but understand what they
 are: bookkeeping and a human-readable marker, not a mechanism that controls what anyone receives.

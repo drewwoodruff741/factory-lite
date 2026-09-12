@@ -698,3 +698,14 @@ depend on.
   there was a *deterministic rule*. The corrected finding is narrower and strictly better news —
   FACTORY gets the design-doc path **every time**, which is a fixed collision, and a fixed collision
   can be closed by a fixed instruction. The wrong version could not have been.
+- **Step 9: "every push to `main` ships to every project immediately" is one word too strong.**
+  Pushing v3.3.0 refreshed the marketplace clone at once — and `~/dev/coach`'s install record still
+  pointed at `cache/factory/factory-lite/3.2.0` afterwards, because a project runs the cache
+  directory its install record pins until *that project* is updated. Step 6's finding stands (the
+  clone is `main`, tags are never fetched, and content drifts under a fixed version number); what
+  was wrong is the timing word attached to it, carried forward through three steps because it was
+  never re-observed after the one push that could check it. The correction makes the discipline
+  slightly *more* important rather than less: you control what the next install receives, not when
+  it is received, so a work-in-progress push sits on `main` waiting for someone to collect it at a
+  moment you will not witness. The general form: *a claim about timing needs an observation at two
+  times; one measurement can only ever establish the state, never the latency.*
