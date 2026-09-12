@@ -409,6 +409,15 @@ ships. A real project is where that stops being theoretical.
 **Goal:** turn the Deferred list into an evidence-ranked backlog and start building from it, one
 item at a time.
 
+> **The phase model, settled in v3.2.0 after Step 7 exposed the ambiguity.** **Pre-alpha is the
+> walking skeleton, full stop.** It ends when the skeleton walks and `./prove.sh` proves it — not
+> when every numbered requirement is met. Scope beyond the skeleton belongs in SPEC.md `## Deferred`
+> at spec time, and becomes the top of this step's ranked backlog. So arriving here with most of the
+> product unbuilt is **correct**, not premature: hardening is where the rest gets built, with
+> `PROFILE=strict` and a real suite behind it. Step 7 nearly graduated coach under the old
+> ambiguity, where `harden`'s gate passed while four of its ten stated "pre-alpha requirements"
+> were unbuilt.
+
 **Bring to the session:** the Context block, the project's SPEC.md and prove.sh.
 
 **The session produces:** `/factory-lite:harden` run to completion (reviewer pass, `Phase:` and

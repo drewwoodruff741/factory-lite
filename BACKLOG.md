@@ -196,6 +196,17 @@ settings that change what the harness can be trusted to prove.
   behaviour this item is about. The scorecard never named a path. The honest record is that the bar
   was not met **and** two of its criteria were poorly specified. A future scorecard fixes the path
   first, or scores the design doc only when the path did not call for one.
+- **Second defective criterion, found in the v3.2.0 audit: row 3 was also wrong.** Row 3 failed
+  `brainstorming` for not leaving `## Deferred` empty. v3.2.0 settled that **pre-alpha means the
+  walking skeleton**, so scope beyond the skeleton belongs in `## Deferred` **at spec time** — which
+  is exactly what brainstorming did. `skills/spec/SKILL.md`'s "leave `## Deferred` empty" was the
+  instruction that made row 3 look like a rule, and it has been removed. Row 3 is withdrawn.
+  **Net effect on this item: it now fails on the document chain alone** — rows 6 and 7, the 1911
+  lines of design-plus-plan referencing themselves rather than `SPEC.md`. That is the genuine,
+  path-independent finding, and a cleaner verdict than the one first recorded. Two of the three
+  original failures turned out to be defects in the bar, which is itself the lesson: *a
+  pre-registered criterion is only as good as the model it encodes, and this one encoded a phase
+  definition the harness had not yet settled.*
 - **Row 7 closed, 2026-09-12: it did hand off, and the handoff is the strongest argument against
   this item.** Allowed to reach its own end, brainstorming invoked `writing-plans`, which wrote
   `docs/superpowers/plans/2026-09-12-coach-stage-1-walking-skeleton.md` — **1608 lines, 9 TDD tasks,

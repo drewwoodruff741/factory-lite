@@ -559,3 +559,26 @@ depend on.
   never fires is indistinguishable from an absent one, and a project cannot tell the difference
   from the inside.** That is BACKLOG item 4 arriving as evidence rather than as a hypothetical, on
   a real project, one step after it was written down.
+- **Step 7 audit: the harness had two definitions of "pre-alpha done" and no way to notice.**
+  `skills/harden/SKILL.md` gates graduation on `pre-alpha`'s three-item done-when, all of which are
+  about the **walking skeleton**. `template/SPEC.md` invited a numbered list headed "Pre-alpha
+  requirements" with nothing bounding it to the skeleton. Coach's spec came back with **ten**
+  requirements and had to **invent a "## Build order" section** to stage them — a project inventing
+  structure the template should have supplied is the tell. The result: coach passed `harden`'s gate
+  with four of its own stated pre-alpha requirements unbuilt, and the harness had no answer about
+  which definition won. Fixed in v3.2.0 by bounding the list to the skeleton, because that is what
+  the phase was always for. The general form: *when a template invites a list, it must also say
+  what bounds the list, or the list becomes the scope.*
+- **Step 7 audit: the harness was the one repo where its own gate could not run.** `~/dev/factory-lite`
+  had no `prove.sh` **and** no `.claude/settings.json` enabling the plugin — so the Stop gate had
+  nothing to execute and was never even loaded. The release rule was therefore enforced by memory
+  alone, and **it was broken twice in the session that was auditing the harness for exactly this
+  class of defect.** Both times the checks passed when finally run, so nothing shipped broken; that
+  was luck, not a control. Fixed by dogfooding: a repo-root `prove.sh` running the smoke test, the
+  four validate calls, and a new assertion that both manifests carry the same `version` — release
+  rule step 3's named failure, and the only part of the rule that leaves no trace when you get it
+  wrong, since every diagnostic keeps reporting *a* version, just not the same one. The provocation
+  test earned its place immediately: **all four `validate` calls passed a deliberately desynced pair
+  of manifests**, and only the new check caught it. The general form: *a tool that enforces a
+  discipline on others and exempts itself is not enforcing a discipline, it is expressing a
+  preference.*

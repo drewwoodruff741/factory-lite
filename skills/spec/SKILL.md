@@ -13,6 +13,11 @@ Use the AskUserQuestion tool. Don't ask obvious questions; dig into the hard par
 - What are the two or three hardest parts I haven't mentioned?
 
 Keep interviewing until those are answered, then write SPEC.md using the sections already in
-the file (keep every heading; leave `## Deferred` empty). Set `Phase: pre-alpha`.
+the file, keeping every heading. Set `Phase: pre-alpha`.
+
+Scope the requirements to the walking skeleton and nothing else — pre-alpha ends when the skeleton
+walks. Everything the skeleton doesn't need goes in `## Deferred` now, at spec time, rather than
+swelling the requirement list; `## Out of scope` is for what you are refusing to build at all.
+Nothing belongs on both lists.
 Then update the "Run / prove" lines in CLAUDE.md to match. Do not write any code and do not
 create any other documents.
