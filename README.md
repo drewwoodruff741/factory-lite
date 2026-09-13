@@ -199,13 +199,94 @@ Two knobs worth knowing:
 ## 5. New-project runbook
 
 ```
-bash ~/dev/factory-lite/scripts/init.sh my-app && cd my-app && git init   # then open the folder in VS Code
+bash ~/dev/factory-lite/scripts/init.sh my-app && cd my-app && git init   # then open the folder
 /factory-lite:spec  <one-line idea>       # interview -> SPEC.md. No code.
 /clear                                     # fresh context for implementation
 "Implement the walking skeleton in SPEC.md. Write the ./prove.sh check first, then make it pass."
                                            # the Stop gate keeps the session honest
 /factory-lite:harden                       # only after prove.sh passes on the skeleton
 ```
+
+Those five lines are the whole harness. What follows is what one project cost to learn, folded in
+at the point where each thing bites — the evidence for every item is in `LESSONS.md`, and none of it
+is obvious from the five lines above.
+
+### Phase 0 — the folder, before any session
+
+`init.sh` copies the four files a plugin cannot ship (`CLAUDE.md`, `SPEC.md`, `prove.sh`,
+`.claude/settings.json`) and installs both plugins at project scope. Those four are the project's
+from that moment; everything else arrives from the plugin.
+
+- **`git init` before the first session.** In a non-repo the gate cannot tell that nothing changed —
+  the fallback tree state can never match — so it re-runs the check and announces itself on *every*
+  stop, chat-only turns included.
+- **Read `init.sh`'s output for `warn:`.** The pin *enables* a plugin; it does not *install* one.
+  When the install fails you get no gate, silently, for the life of the project: nothing errors, it
+  is simply absent.
+- **Then confirm it, by typing `/hooks` yourself.** You want `Stop` carrying the gate. A session
+  asked to check this reads config off disk and infers, and has been wrong about it twice.
+
+### Phase 1 — the spec, in its own session, with no code
+
+`/factory-lite:spec <one-line idea>`, or `superpowers:brainstorming` for the harder interview.
+
+- **If you use brainstorming, stop it at architectural step 5.** A new project is Architectural by
+  that skill's own rule, and its step 6 writes a design doc while step 9 hands off to
+  `writing-plans`. That chain once produced **1911 lines of planning artifact beside a 71-line
+  `SPEC.md`**, referencing itself rather than the file the gate and skills actually read. Steps 1-5
+  are the half you want. `pre-alpha/SKILL.md` says this too, at the moment it matters.
+- **Pre-alpha means the walking skeleton, full stop.** Everything the skeleton does not need goes in
+  `## Deferred` *at spec time*. When the requirement list becomes the scope instead, you reach
+  `harden`'s gate with most of the product unbuilt and nothing notices.
+- **The most important line in the spec is "Proven by."** It becomes the `prove.sh` check, which
+  becomes the definition of done. Make it a value only a working system could produce — a remainder
+  rather than a total, a computed figure rather than an echo.
+
+Then `/clear`.
+
+### Phase 2 — the walking skeleton
+
+- **The check goes first, always.** The gate is *dormant* until the `TODO` in `prove.sh` is
+  replaced, so a build that writes the check last runs its entire length unenforced. A planning
+  skill will hand you a task list with it at the end; reorder it to task 1.
+- **`.gitignore` the database, logs and caches on day one.** Anything the app writes into its own
+  directory changes the tree hash, so the gate re-runs on every turn — and `pytest` and `ruff` add
+  their own caches the moment the project goes strict.
+- **Do not change the harness mid-build.** The wish goes in `## Deferred`, in one line. Harness
+  changes happen in FACTORY, between projects, with evidence.
+
+### Phase 3 — hardening
+
+`/factory-lite:harden` once `prove.sh` passes on the skeleton. It flips the phase and the profile,
+ranks `## Deferred`, and asks for one line of evidence per item.
+
+- **Watch every new check fail on a broken input before trusting it.** Three tests in the first
+  project could not fail under any input and the suite passed them happily — one of them on the
+  exact behaviour its item existed to deliver. *Any assertion you have not seen fire is a decoration.*
+- **An item with no evidence stays deferred.** The bug it would have prevented, or the second and
+  third concrete use that now exists. Wanting it is not evidence.
+- **Never fake a check you cannot run.** No type checker installed? Record it in `## Deferred` with
+  that as the reason. `harden` step 5 asks for this explicitly.
+
+### The rhythm, and why two components rather than one
+
+One backlog item at a time → its own branch → `prove.sh` green → **the `reviewer` agent before you
+stop** → merge.
+
+The reviewer has the best record of anything here by a distance: seven dispatches across the first
+project, finding a P0, a P1, three tests that could not fail, and three deleted `SPEC.md` sections —
+**with `./prove.sh` green throughout all of it**. That is not a contradiction, it is the division of
+labour: **a `prove.sh` gate protects against regression, not against introduction.** At the moment a
+defect is written, the check that would catch it is part of the same unwritten work. The gate holds
+you to what already works; the review catches what you are adding. Neither substitutes for the other.
+
+### Where harness wishes go
+
+**`~/dev/factory-lite/BACKLOG.md`, never the project.** Then they wait. One project's observation is
+one observation, and deletions get the same bar as additions. After a project ships, run the review
+procedure at the top of that file once — forward pass over the items, reverse pass over the
+components, and the standing rule that adding requires deleting. Five of nine items were *rejected*
+the first time it ran, which is the procedure working rather than failing.
 
 ## 6. Known edges
 
