@@ -838,3 +838,15 @@ measurement.**
   project to change on its behalf**, which is a constraint on the framework, not on the person who
   owns both. A rule that cannot distinguish a demand from a decision would have forbidden the most
   useful thing that happened that day.
+- **The `reviewer` summarised its own findings wrongly, and the summary was the half that was
+  wrong.** Reviewing a branch in `~/dev/coach` it opened with "eight of nine checks reproduced
+  failing"; its own detail below listed nine and named the tenth assertion separately. Nothing was
+  lost — the relaying session noticed the two halves disagreed — but the agent had no rule against
+  it, because its output format asks for findings and never for a count, so a count arrived
+  unbidden and unchecked. **This is the previous entry's failure one level down.** There it was a
+  decision recorded in two places, the cheaper one going stale. Here it is one fact recorded twice
+  in a single message: the list, written from the work, and the tally, written from memory. The
+  tally is always the cheaper of the two, so it is always the one that is wrong. `agents/reviewer.md`
+  now forbids it — *do not state a count you have not just enumerated in this report.*
+  *A summary that can disagree with the thing it summarises is a second source of truth, and a
+  reviewer's whole value is being the one report that was checked rather than believed.*

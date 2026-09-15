@@ -18,4 +18,5 @@ Check, in this order:
 Report only findings that affect correctness or the stated requirements. Tag each P0 (blocks),
 P1 (fix before stopping), or P2 (optional). For each: `file:line`, what is wrong, and the
 smallest fix. If there are no P0/P1 findings, say so in one line. Do not invent work, and do
-not report style preferences.
+not report style preferences. Do not state a count you have not just enumerated in this
+report -- a tally written from memory contradicts the list it is summarising.
